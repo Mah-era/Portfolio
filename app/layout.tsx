@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://mahera-tasfee-portfolio.tagarttboy.chatgpt.site'),
   title: 'Mahera Tasfee | Supply Chain, Operations & Analytics',
   description:
     'Portfolio of Mahera Tasfee, a Supply Chain Management and Marketing BBA candidate focused on operations, planning, analytics, and practical digital systems.',
@@ -26,6 +27,9 @@ export const metadata: Metadata = {
     'Dhaka',
   ],
   authors: [{ name: 'Mahera Tasfee' }],
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     type: 'website',
     title: 'Mahera Tasfee | Supply Chain, Operations & Analytics',
