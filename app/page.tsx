@@ -92,6 +92,10 @@ export default function Home() {
 
   useEffect(() => {
     const root = document.documentElement;
+    const cameraPanels = document.querySelectorAll<HTMLElement>(
+      '.hero-title-wrap, .hero-stage, .manifesto, .project-console, .archive-grid, .experience-table, .profile-grid, .skill-grid, .footer-inner',
+    );
+    cameraPanels.forEach((panel) => panel.classList.add('camera-panel'));
     const motionTargets = document.querySelectorAll<HTMLElement>(
       '.manifesto-label, .manifesto-copy, .capability-stack article, .project-lab-head > *, .project-console, .archive-heading > *, .archive-card, .experience-heading > *, .experience-table article, .profile-card, .skills-heading, .skill-grid article, .footer-copy, .footer-cta',
     );
@@ -113,8 +117,22 @@ export default function Home() {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         const max = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = max > 0 ? window.scrollY / max : 0;
         root.style.setProperty('--scroll-y', String(window.scrollY));
-        root.style.setProperty('--scroll-progress', `${max > 0 ? (window.scrollY / max) * 100 : 0}%`);
+        root.style.setProperty('--scroll-progress', `${progress * 100}%`);
+        root.style.setProperty('--camera-rx', `${Math.sin(progress * Math.PI * 5) * 13 - 5}deg`);
+        root.style.setProperty('--camera-ry', `${Math.cos(progress * Math.PI * 4) * 18}deg`);
+        root.style.setProperty('--camera-rz', `${Math.sin(progress * Math.PI * 3) * 4}deg`);
+        root.style.setProperty('--camera-z', `${-240 + Math.sin(progress * Math.PI * 7) * 150}px`);
+        root.style.setProperty('--camera-x', `${Math.sin(progress * Math.PI * 6) * 110}px`);
+        root.style.setProperty('--camera-y', `${Math.cos(progress * Math.PI * 8) * 90}px`);
+        root.style.setProperty('--chapter', `"${String(Math.min(8, Math.floor(progress * 9) + 1)).padStart(2, '0')}"`);
+        cameraPanels.forEach((panel, index) => {
+          const rect = panel.getBoundingClientRect();
+          const local = Math.max(-1, Math.min(1, (rect.top + rect.height / 2 - window.innerHeight / 2) / window.innerHeight));
+          panel.style.setProperty('--panel-angle', `${local * (index % 2 ? -2.4 : 2.4)}deg`);
+          panel.style.setProperty('--panel-shift', `${local * 24}px`);
+        });
       });
     };
     const updatePointer = (event: PointerEvent) => {
@@ -136,6 +154,17 @@ export default function Home() {
     <main id="top">
       <div className="scroll-progress" aria-hidden="true" />
       <div className="cursor-glow" aria-hidden="true" />
+      <div className="camera-scene" aria-hidden="true">
+        <div className="camera-rig">
+          <div className="camera-grid camera-grid-floor" />
+          <div className="camera-grid camera-grid-wall" />
+          <div className="camera-orb camera-orb-a" />
+          <div className="camera-orb camera-orb-b" />
+          <div className="camera-orb camera-orb-c" />
+          <div className="camera-particles">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
+        </div>
+      </div>
+      <div className="camera-hud" aria-hidden="true"><span>SCROLL CAMERA</span><b>CHAPTER</b><strong /></div>
       <div className="hero-world">
         <div className="motion-banner" aria-hidden="true">
           <div><span>AVAILABLE FOR MTO & GRADUATE ROLES</span><i /> <span>SUPPLY CHAIN × ANALYTICS × EXECUTION</span><i /> <span>AVAILABLE FOR MTO & GRADUATE ROLES</span><i /> <span>SUPPLY CHAIN × ANALYTICS × EXECUTION</span></div>
