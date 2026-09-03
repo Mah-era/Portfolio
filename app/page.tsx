@@ -86,8 +86,11 @@ const githubProjects = [
   ['focusflow-planner', 'Productivity planning tool', 'JavaScript'],
 ];
 
+const rooms = ['ARRIVAL', 'MINDSET', 'PROJECT LAB', 'BUILD ARCHIVE', 'EXPERIENCE', 'CREDENTIALS', 'TOOLKIT', 'CONTACT'];
+
 export default function Home() {
   const [activeProject, setActiveProject] = useState(0);
+  const [currentRoom, setCurrentRoom] = useState(0);
   const selected = projects[activeProject];
 
   useEffect(() => {
@@ -96,6 +99,8 @@ export default function Home() {
       '.hero-title-wrap, .hero-stage, .manifesto, .project-console, .archive-grid, .experience-table, .profile-grid, .skill-grid, .footer-inner',
     );
     cameraPanels.forEach((panel) => panel.classList.add('camera-panel'));
+    const journeyRooms = document.querySelectorAll<HTMLElement>('.journey-room');
+    let activeRoom = -1;
     const motionTargets = document.querySelectorAll<HTMLElement>(
       '.manifesto-label, .manifesto-copy, .capability-stack article, .project-lab-head > *, .project-console, .archive-heading > *, .archive-card, .experience-heading > *, .experience-table article, .profile-card, .skills-heading, .skill-grid article, .footer-copy, .footer-cta',
     );
@@ -133,6 +138,26 @@ export default function Home() {
           panel.style.setProperty('--panel-angle', `${local * (index % 2 ? -2.4 : 2.4)}deg`);
           panel.style.setProperty('--panel-shift', `${local * 24}px`);
         });
+        let nearestRoom = 0;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+        journeyRooms.forEach((room, index) => {
+          const rect = room.getBoundingClientRect();
+          const centerDistance = rect.top + rect.height / 2 - window.innerHeight / 2;
+          const localProgress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (rect.height + window.innerHeight)));
+          const edge = Math.abs(localProgress - 0.5) * 2;
+          room.style.setProperty('--room-rx', `${(0.5 - localProgress) * 8}deg`);
+          room.style.setProperty('--room-ry', `${Math.sin(localProgress * Math.PI * 2) * (index % 2 ? -3 : 3)}deg`);
+          room.style.setProperty('--room-z', `${-edge * 95}px`);
+          room.style.setProperty('--room-scale', String(1 - edge * 0.025));
+          if (Math.abs(centerDistance) < nearestDistance) {
+            nearestDistance = Math.abs(centerDistance);
+            nearestRoom = index;
+          }
+        });
+        if (nearestRoom !== activeRoom) {
+          activeRoom = nearestRoom;
+          setCurrentRoom(nearestRoom);
+        }
       });
     };
     const updatePointer = (event: PointerEvent) => {
@@ -165,7 +190,9 @@ export default function Home() {
         </div>
       </div>
       <div className="camera-hud" aria-hidden="true"><span>SCROLL CAMERA</span><b>CHAPTER</b><strong /></div>
-      <div className="hero-world">
+      <div className="eye-frame" aria-hidden="true"><span /><i /><b /></div>
+      <div className="room-hud" aria-live="polite"><span>ROOM</span><strong>{String(currentRoom + 1).padStart(2, '0')}</strong><p>{rooms[currentRoom]}</p><div>{rooms.map((room, index) => <i className={index === currentRoom ? 'active' : ''} key={room} />)}</div></div>
+      <div className="hero-world journey-room" data-room="arrival">
         <div className="motion-banner" aria-hidden="true">
           <div><span>AVAILABLE FOR MTO & GRADUATE ROLES</span><i /> <span>SUPPLY CHAIN × ANALYTICS × EXECUTION</span><i /> <span>AVAILABLE FOR MTO & GRADUATE ROLES</span><i /> <span>SUPPLY CHAIN × ANALYTICS × EXECUTION</span></div>
         </div>
@@ -217,7 +244,7 @@ export default function Home() {
         </section>
       </div>
 
-      <section className="manifesto section-shell" id="capabilities">
+      <section className="manifesto section-shell journey-room" id="capabilities" data-room="mindset">
         <div className="manifesto-label"><span>01</span><p>What I bring</p></div>
         <div className="manifesto-copy"><p className="overline">Qualities recruiters can count on</p><h2>Curious enough to question.<br /><em>Disciplined enough to deliver.</em></h2><p className="manifesto-lead">My advantage is not one tool. It is how I approach unfamiliar problems: understand the system, communicate clearly, take ownership, and keep moving until the work becomes usable.</p></div>
         <div className="capability-stack">
@@ -228,7 +255,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="project-lab" id="work">
+      <section className="project-lab journey-room" id="work" data-room="project-lab">
         <div className="project-lab-head section-shell"><div><p className="overline overline-light">Selected work · interactive archive</p><h2>Proof you can<br /><span>open and explore.</span></h2></div><p>Six working projects connecting supply-chain concepts, analytics, product thinking, and modern digital execution.</p></div>
         <div className="project-console section-shell">
           <div className="project-selector" role="tablist" aria-label="Select a portfolio project">
@@ -247,7 +274,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="github-archive" id="archive">
+      <section className="github-archive journey-room" id="archive" data-room="build-archive">
         <div className="archive-heading section-shell">
           <div><p className="overline">Complete GitHub archive · 15 projects</p><h2>Every build gets<br /><em>a place in the story.</em></h2></div>
           <p>The structure is ready for you to add final case-study copy, screenshots, and screen recordings later. Every public source project is already represented.</p>
@@ -270,20 +297,20 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="experience section-shell" id="experience">
+      <section className="experience section-shell journey-room" id="experience" data-room="experience">
         <div className="experience-heading"><div className="manifesto-label"><span>02</span><p>Experience</p></div><div><p className="overline">Five years of moving work forward</p><h2>Execution is a<br /><em>people system.</em></h2></div></div>
         <div className="experience-table">{experience.map((item, index) => <article key={`${item.company}-${item.role}`}><div className="experience-number">0{index + 1}</div><div className="experience-date">{item.period}</div><div className="experience-title"><h3>{item.role}</h3><p>{item.focus}</p></div><div className="experience-company"><BriefcaseBusiness size={16} />{item.company}</div><div className="experience-proof"><strong>{item.proof}</strong><p>{item.detail}</p></div></article>)}</div>
       </section>
 
-      <section className="profile-grid section-shell">
+      <section className="profile-grid section-shell journey-room" data-room="credentials">
         <article className="profile-card profile-card-education"><div className="profile-card-icon"><GraduationCap size={25} /></div><span className="card-index">01 / EDUCATION</span><h2>North South<br />University</h2><p>Bachelor of Business Administration</p><strong>Supply Chain Management & Marketing</strong><small>Expected graduation · 2026</small></article>
         <article className="profile-card profile-card-leadership"><div className="profile-card-icon"><Trophy size={25} /></div><span className="card-index">02 / LEADERSHIP</span><h2>Vice President</h2><p>North South University Debate Club</p><blockquote>Competitive communication turned into team direction, tournament leadership, and confidence under pressure.</blockquote><small>2025—present</small></article>
         <article className="profile-card profile-card-research"><div className="research-orbit" aria-hidden="true"><span /><span /><span /></div><span className="card-index">03 / RESEARCH EXPOSURE</span><h2>Curious about the<br />systems behind growth.</h2><p>Independent academic exposure across FMCG, AIoT, RMG, operations, and supply-chain management.</p><div className="research-tags"><span>FMCG</span><span>AIoT</span><span>RMG</span><span>Operations</span></div></article>
       </section>
 
-      <section className="skills-section"><div className="section-shell"><div className="skills-heading"><p className="overline overline-light">A cross-functional toolkit</p><h2>Think clearly.<br /><span>Build practically.</span></h2></div><div className="skill-grid">{skillGroups.map(({ title, icon: Icon, skills }, index) => <article key={title}><div className="skill-card-head"><Icon size={21} /><span>0{index + 1}</span></div><h3>{title}</h3><div>{skills.map((skill) => <span key={skill}>{skill}</span>)}</div></article>)}</div></div><div className="moving-line" aria-hidden="true"><span>SUPPLY CHAIN</span><i /><span>ANALYTICS</span><i /><span>OPERATIONS</span><i /><span>EXECUTION</span><i /><span>SUPPLY CHAIN</span></div></section>
+      <section className="skills-section journey-room" data-room="toolkit"><div className="section-shell"><div className="skills-heading"><p className="overline overline-light">A cross-functional toolkit</p><h2>Think clearly.<br /><span>Build practically.</span></h2></div><div className="skill-grid">{skillGroups.map(({ title, icon: Icon, skills }, index) => <article key={title}><div className="skill-card-head"><Icon size={21} /><span>0{index + 1}</span></div><h3>{title}</h3><div>{skills.map((skill) => <span key={skill}>{skill}</span>)}</div></article>)}</div></div><div className="moving-line" aria-hidden="true"><span>SUPPLY CHAIN</span><i /><span>ANALYTICS</span><i /><span>OPERATIONS</span><i /><span>EXECUTION</span><i /><span>SUPPLY CHAIN</span></div></section>
 
-      <footer><div className="footer-orbit" aria-hidden="true" /><div className="footer-inner section-shell"><div className="footer-copy"><p className="overline overline-light">Graduate talent · Available 2026</p><h2>Let&apos;s move something<br /><span>important forward.</span></h2><p>For management trainee, supply-chain, operations, planning, and business-analytics opportunities.</p></div><div className="footer-cta"><a href="https://www.linkedin.com/in/mahera-tasfee/" target="_blank" rel="noreferrer"><span><Network size={21} /> Connect on LinkedIn</span><ArrowUpRight size={22} /></a><a href="https://github.com/Mah-era" target="_blank" rel="noreferrer"><span><GitBranch size={21} /> Explore GitHub</span><ArrowUpRight size={22} /></a></div></div><div className="footer-base section-shell"><div><span className="brand-symbol">M</span><p>Mahera Tasfee<br /><small>Supply chain · operations · analytics</small></p></div><p><MapPin size={14} /> Dhaka, Bangladesh</p><a href="#top">Back to top <ArrowRight size={14} /></a></div></footer>
+      <footer className="journey-room" data-room="contact"><div className="footer-orbit" aria-hidden="true" /><div className="footer-inner section-shell"><div className="footer-copy"><p className="overline overline-light">Graduate talent · Available 2026</p><h2>Let&apos;s move something<br /><span>important forward.</span></h2><p>For management trainee, supply-chain, operations, planning, and business-analytics opportunities.</p></div><div className="footer-cta"><a href="https://www.linkedin.com/in/mahera-tasfee/" target="_blank" rel="noreferrer"><span><Network size={21} /> Connect on LinkedIn</span><ArrowUpRight size={22} /></a><a href="https://github.com/Mah-era" target="_blank" rel="noreferrer"><span><GitBranch size={21} /> Explore GitHub</span><ArrowUpRight size={22} /></a></div></div><div className="footer-base section-shell"><div><span className="brand-symbol">M</span><p>Mahera Tasfee<br /><small>Supply chain · operations · analytics</small></p></div><p><MapPin size={14} /> Dhaka, Bangladesh</p><a href="#top">Back to top <ArrowRight size={14} /></a></div></footer>
     </main>
   );
 }
