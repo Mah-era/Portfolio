@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowDown, ArrowRight, ArrowUpRight, BarChart3, BriefcaseBusiness, Check, ChevronRight, CircleDot, Database, GitBranch, GraduationCap, MapPin, Network, Orbit, Presentation, Radar, Sparkles, Trophy, Workflow, Zap } from 'lucide-react';
 
 const projects = [
@@ -68,13 +68,78 @@ const skillGroups = [
   { title: 'Build', icon: Database, skills: ['React', 'Next.js', 'TypeScript', 'Python', 'SQL / SQLite'] },
 ];
 
+const githubProjects = [
+  ['frutea', 'Product experience · SCM concept', 'HTML'],
+  ['save-farzu', 'Mini-game collection', 'HTML'],
+  ['cozy-cat-scm-bull-game', 'Supply-chain learning simulation', 'JavaScript'],
+  ['PawPaw-World-3D-v1', '3D interactive world', 'JavaScript'],
+  ['pawpaw-world', 'Canvas exploration game', 'HTML'],
+  ['pawpaw-power-retro-game', 'Retro browser game', 'JavaScript'],
+  ['scm-distributor-management-frontenddesign', 'Distribution interface concept', 'JavaScript'],
+  ['insightbi', 'Business intelligence platform', 'TypeScript'],
+  ['finance-tracker', 'Personal finance tool', 'JavaScript'],
+  ['cse-coursework', 'Programming coursework archive', 'Python'],
+  ['scm-analytics-studio', 'Supply-chain analytics control tower', 'Python'],
+  ['ForecastSync', 'Demand planning application', 'TypeScript'],
+  ['moodtracker', 'Personal wellbeing tracker', 'JavaScript'],
+  ['scm-distributor-management', 'Distributor operations system', 'JavaScript'],
+  ['focusflow-planner', 'Productivity planning tool', 'JavaScript'],
+];
+
 export default function Home() {
   const [activeProject, setActiveProject] = useState(0);
   const selected = projects[activeProject];
 
+  useEffect(() => {
+    const root = document.documentElement;
+    const motionTargets = document.querySelectorAll<HTMLElement>(
+      '.manifesto-label, .manifesto-copy, .capability-stack article, .project-lab-head > *, .project-console, .archive-heading > *, .archive-card, .experience-heading > *, .experience-table article, .profile-card, .skills-heading, .skill-grid article, .footer-copy, .footer-cta',
+    );
+    motionTargets.forEach((element, index) => {
+      element.classList.add('motion-target');
+      element.style.setProperty('--delay', `${(index % 4) * 70}ms`);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add('in-view');
+      }),
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+    );
+    motionTargets.forEach((element) => observer.observe(element));
+
+    let frame = 0;
+    const updateScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        root.style.setProperty('--scroll-y', String(window.scrollY));
+        root.style.setProperty('--scroll-progress', `${max > 0 ? (window.scrollY / max) * 100 : 0}%`);
+      });
+    };
+    const updatePointer = (event: PointerEvent) => {
+      root.style.setProperty('--pointer-x', `${event.clientX}px`);
+      root.style.setProperty('--pointer-y', `${event.clientY}px`);
+    };
+    updateScroll();
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    window.addEventListener('pointermove', updatePointer, { passive: true });
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', updateScroll);
+      window.removeEventListener('pointermove', updatePointer);
+    };
+  }, []);
+
   return (
     <main id="top">
+      <div className="scroll-progress" aria-hidden="true" />
+      <div className="cursor-glow" aria-hidden="true" />
       <div className="hero-world">
+        <div className="motion-banner" aria-hidden="true">
+          <div><span>AVAILABLE FOR MTO & GRADUATE ROLES</span><i /> <span>SUPPLY CHAIN × ANALYTICS × EXECUTION</span><i /> <span>AVAILABLE FOR MTO & GRADUATE ROLES</span><i /> <span>SUPPLY CHAIN × ANALYTICS × EXECUTION</span></div>
+        </div>
         <div className="grid-plane" aria-hidden="true" />
         <div className="aurora aurora-one" aria-hidden="true" />
         <div className="aurora aurora-two" aria-hidden="true" />
@@ -113,23 +178,24 @@ export default function Home() {
               <div className="stage-window stage-window-back"><div className="browser-bar"><span /><span /><span /><small>forecastsync.app</small></div><img src="/assets/forecastsync.png" alt="ForecastSync project preview" /></div>
               <div className="stage-window stage-window-front"><div className="browser-bar"><span /><span /><span /><small>SCM Analytics Studio</small></div><img src="/assets/scm-studio.png" alt="SCM Analytics Studio dashboard preview" /></div>
               <div className="stage-signal"><Radar size={18} /><span>Building at the intersection of<br /><strong>business + systems</strong></span></div>
-              <div className="stage-badge"><Sparkles size={14} /> 13 public builds</div>
+              <div className="stage-badge"><Sparkles size={14} /> 15 public builds</div>
             </div>
           </div>
         </section>
 
         <section className="proof-rail" aria-label="Candidate evidence">
-          <div><strong>30+</strong><span>initiatives<br />coordinated</span></div><div><strong>250+</strong><span>client<br />interactions</span></div><div><strong>13</strong><span>public GitHub<br />projects</span></div><div><strong>04</strong><span>professional<br />roles</span></div><div className="proof-rail-note"><CircleDot size={15} /> Expected graduation · 2026</div>
+          <div><strong>30+</strong><span>initiatives<br />coordinated</span></div><div><strong>250+</strong><span>client<br />interactions</span></div><div><strong>15</strong><span>public GitHub<br />projects</span></div><div><strong>04</strong><span>professional<br />roles</span></div><div className="proof-rail-note"><CircleDot size={15} /> Expected graduation · 2026</div>
         </section>
       </div>
 
       <section className="manifesto section-shell" id="capabilities">
         <div className="manifesto-label"><span>01</span><p>What I bring</p></div>
-        <div className="manifesto-copy"><p className="overline">A business mindset with builder energy</p><h2>Not just ideas.<br /><em>Operational proof.</em></h2><p className="manifesto-lead">I work across the gap between a business question and a usable answer—structuring the work, making the data clear, and building the system that moves it forward.</p></div>
+        <div className="manifesto-copy"><p className="overline">Qualities recruiters can count on</p><h2>Curious enough to question.<br /><em>Disciplined enough to deliver.</em></h2><p className="manifesto-lead">My advantage is not one tool. It is how I approach unfamiliar problems: understand the system, communicate clearly, take ownership, and keep moving until the work becomes usable.</p></div>
         <div className="capability-stack">
-          <article><div><Workflow size={22} /><span>01</span></div><h3>Structure the work</h3><p>Briefs, timelines, workflows, process maps, and stakeholder alignment that make execution visible.</p></article>
-          <article><div><BarChart3 size={22} /><span>02</span></div><h3>Clarify the signal</h3><p>Forecasts, dashboards, KPIs, and management reporting designed around decisions—not decoration.</p></article>
-          <article><div><Zap size={22} /><span>03</span></div><h3>Prototype the answer</h3><p>Practical digital tools that make operating concepts inspectable, testable, and easier to communicate.</p></article>
+          <article><div><Workflow size={22} /><span>01</span></div><h3>Systems-minded</h3><p>I look for the relationship between demand, information, people, and process—not just the task directly in front of me.</p></article>
+          <article><div><BarChart3 size={22} /><span>02</span></div><h3>Analytically curious</h3><p>I ask better questions, test assumptions, and turn messy information into a clear signal people can use.</p></article>
+          <article><div><Presentation size={22} /><span>03</span></div><h3>Clear communicator</h3><p>I translate details into structured updates, client-ready documents, and presentations that move decisions forward.</p></article>
+          <article><div><Zap size={22} /><span>04</span></div><h3>Bias for execution</h3><p>I learn by building—taking ownership, iterating quickly, and turning concepts into practical working systems.</p></article>
         </div>
       </section>
 
@@ -149,6 +215,29 @@ export default function Home() {
               <div className="project-meta"><div className="project-stack">{selected.stack.map((item) => <span key={item}>{item}</span>)}</div><div className="project-actions"><a href={selected.repo} target="_blank" rel="noreferrer">Source <GitBranch size={14} /></a><a href={selected.demo} target="_blank" rel="noreferrer">Launch project <ArrowUpRight size={14} /></a></div></div>
             </div>
           </article>
+        </div>
+      </section>
+
+      <section className="github-archive" id="archive">
+        <div className="archive-heading section-shell">
+          <div><p className="overline">Complete GitHub archive · 15 projects</p><h2>Every build gets<br /><em>a place in the story.</em></h2></div>
+          <p>The structure is ready for you to add final case-study copy, screenshots, and screen recordings later. Every public source project is already represented.</p>
+        </div>
+        <div className="archive-grid section-shell">
+          {githubProjects.map(([name, category, language], index) => (
+            <article className="archive-card" key={name}>
+              <div className="archive-media-placeholder">
+                <div className="placeholder-motion"><span /><span /><span /></div>
+                <p>MEDIA SLOT</p>
+                <div><span>+ SCREENSHOT</span><span>+ SCREEN RECORD</span></div>
+              </div>
+              <div className="archive-card-head"><span>{String(index + 1).padStart(2, '0')} / 15</span><span>{language}</span></div>
+              <h3>{name}</h3>
+              <p>{category}</p>
+              <div className="archive-copy-slot">Project story and impact copy to be added.</div>
+              <a href={`https://github.com/Mah-era/${name}`} target="_blank" rel="noreferrer">Open repository <ArrowUpRight size={14} /></a>
+            </article>
+          ))}
         </div>
       </section>
 
