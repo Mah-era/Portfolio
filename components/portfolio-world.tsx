@@ -1,286 +1,1263 @@
 'use client';
 
-import { Canvas, useFrame } from '@react-three/fiber';
-import { ContactShadows, Float, Html, Image as DreiImage, RoundedBox, Sparkles, Text } from '@react-three/drei';
-import { createContext, Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import {
+  Float,
+  Html,
+  Image as SceneImage,
+  RoundedBox,
+  Sparkles,
+  Text,
+} from '@react-three/drei';
+import {
+  Component,
+  createContext,
+  useContext,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+  type RefObject,
+} from 'react';
 import * as THREE from 'three';
+import {
+  roomData,
+  roomItems,
+  roomOrder,
+  type RoomId,
+  type WorldItem,
+} from '@/lib/portfolio-data';
 
-export type RoomId = 'hub' | 'education' | 'experience' | 'projects' | 'skills' | 'achievements' | 'contact';
-
-export type WorldItem = {
-  eyebrow: string;
-  title: string;
-  body: string;
-  link?: string;
-  linkLabel?: string;
+type V3 = [number, number, number];
+type WorldProps = {
+  resetView: number;
+  journey: RefObject<number>;
+  chapter: number;
+  reducedMotion: boolean;
+  paused: boolean;
+  onInspect: (item: WorldItem) => void;
+  onTravel: (index: number) => void;
+  onReady: () => void;
+  onFallback: () => void;
 };
-
-const InspectContext = createContext<(item: WorldItem) => void>(() => undefined);
-
-export const roomData: Record<RoomId, {
-  label: string;
-  subtitle: string;
+const wood = '#69513f',
+  cream = '#f0ece2',
+  blue = '#414b4b';
+const LookContext = createContext<RefObject<boolean> | null>(null);
+function Block({
+  at = [0, 0, 0],
+  size,
+  color,
+  rotation = [0, 0, 0],
+  round = 0,
+  ...props
+}: {
+  at?: V3;
+  size: V3;
   color: string;
+  rotation?: V3;
+  round?: number;
+}) {
+  return round ? (
+    <RoundedBox
+      position={at}
+      args={size}
+      radius={round}
+      smoothness={3}
+      rotation={rotation}
+      castShadow
+      receiveShadow
+      {...props}
+    >
+      <meshStandardMaterial color={color} roughness={0.78} />
+    </RoundedBox>
+  ) : (
+    <mesh position={at} rotation={rotation} castShadow receiveShadow>
+      <boxGeometry args={size} />
+      <meshStandardMaterial color={color} roughness={0.85} />
+    </mesh>
+  );
+}
+function Ball({
+  at,
+  size = 1,
+  color,
+  scale = [1, 1, 1],
+}: {
+  at: V3;
+  size?: number;
+  color: string;
+  scale?: V3;
+}) {
+  return (
+    <mesh position={at} scale={scale} castShadow>
+      <sphereGeometry args={[size, 20, 14]} />
+      <meshStandardMaterial color={color} roughness={0.85} />
+    </mesh>
+  );
+}
+function Cylinder({
+  at,
+  radius,
+  height,
+  color,
+  bottom,
+}: {
+  at: V3;
+  radius: number;
+  height: number;
+  color: string;
+  bottom?: number;
+}) {
+  return (
+    <mesh position={at} castShadow receiveShadow>
+      <cylinderGeometry args={[radius, bottom ?? radius, height, 24]} />
+      <meshStandardMaterial color={color} roughness={0.8} />
+    </mesh>
+  );
+}
+function Arch({ at, color = cream }: { at: V3; color?: string }) {
+  return (
+    <group position={at}>
+      <mesh position={[0, 2.7, 0]} castShadow>
+        <torusGeometry args={[1.68, 0.065, 10, 36, Math.PI]} />
+        <meshStandardMaterial color={color} />
+      </mesh>
+      {[-1.72, 1.72].map((x) => (
+        <Block
+          key={x}
+          at={[x, 1.35, 0]}
+          size={[0.13, 2.7, 0.13]}
+          color={color}
+        />
+      ))}
+    </group>
+  );
+}
+function ArchWall({ z, color }: { z: number; color: string }) {
+  const shape = useMemo(() => {
+    const s = new THREE.Shape();
+    s.moveTo(-7, 0);
+    s.lineTo(-1.58, 0);
+    s.lineTo(-1.58, 2.7);
+    s.absarc(0, 2.7, 1.58, Math.PI, 0, true);
+    s.lineTo(1.58, 0);
+    s.lineTo(7, 0);
+    s.lineTo(7, 6);
+    s.lineTo(-7, 6);
+    s.closePath();
+    return s;
+  }, []);
+  return (
+    <group position={[0, 0, z]}>
+      <mesh castShadow receiveShadow>
+        <extrudeGeometry args={[shape, { depth: 0.22, bevelEnabled: false }]} />
+        <meshStandardMaterial color={color} />
+      </mesh>
+      <Arch at={[0, 0, 0.3]} />
+    </group>
+  );
+}
+function Plant({
+  at,
+  scale = 1,
+  color = '#677361',
+  pot = '#969081',
+}: {
+  at: V3;
+  scale?: number;
+  color?: string;
+  pot?: string;
+}) {
+  return (
+    <group position={at} scale={scale}>
+      <Cylinder
+        at={[0, 0.35, 0]}
+        radius={0.32}
+        bottom={0.3}
+        height={0.7}
+        color={pot}
+      />
+      <Cylinder at={[0, 0.66, 0]} radius={0.335} height={0.1} color={pot} />
+      <Cylinder at={[0, 1.3, 0]} radius={0.035} height={1.35} color="#566049" />
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <group
+          key={i}
+          position={[0, 0.87 + i * 0.2, 0]}
+          rotation={[0, i * 2.4, 0.45]}
+        >
+          <Ball
+            at={[0.24, 0.15, 0]}
+            size={0.34}
+            scale={[0.45, 1.6, 0.14]}
+            color={i % 2 ? color : '#89917b'}
+          />
+        </group>
+      ))}
+    </group>
+  );
+}
+function Flowers({ at, color = '#d9d2bc' }: { at: V3; color?: string }) {
+  return (
+    <group position={at}>
+      <Cylinder
+        at={[0, 0.21, 0]}
+        radius={0.2}
+        bottom={0.14}
+        height={0.42}
+        color={blue}
+      />
+      {[0, 1, 2].map((i) => (
+        <group
+          key={i}
+          position={[(i - 1) * 0.17, 0.4, 0]}
+          rotation={[0, 0, (i - 1) * 0.2]}
+        >
+          <Cylinder
+            at={[0, 0.3, 0]}
+            radius={0.017}
+            height={0.6}
+            color="#69705a"
+          />
+          <Ball
+            at={[0, 0.66, 0]}
+            size={0.16}
+            scale={[1, 1.4, 1]}
+            color={i % 2 ? '#e0daca' : color}
+          />
+        </group>
+      ))}
+    </group>
+  );
+}
+function Lamp({ at, color = '#dad2bc' }: { at: V3; color?: string }) {
+  return (
+    <group position={at}>
+      <Cylinder at={[0, 0.08, 0]} radius={0.43} height={0.16} color="#3b3933" />
+      <Cylinder at={[0, 1.55, 0]} radius={0.045} height={3} color="#82755b" />
+      <mesh position={[0, 3, 0]} castShadow>
+        <coneGeometry args={[0.54, 0.68, 32, 1, true]} />
+        <meshStandardMaterial color={color} side={THREE.DoubleSide} />
+      </mesh>
+      <Ball at={[0, 2.83, 0]} size={0.18} color="#f6f0dd" />
+      <pointLight
+        position={[0, 2.75, 0]}
+        color="#ffe0a5"
+        intensity={3}
+        distance={5}
+      />
+    </group>
+  );
+}
+function Sofa({
+  at,
+  rotation = [0, 0, 0],
+  color = '#a69c87',
+}: {
+  at: V3;
+  rotation?: V3;
+  color?: string;
+}) {
+  return (
+    <group position={at} rotation={rotation}>
+      <Block
+        at={[0, 0.54, 0]}
+        size={[3.7, 0.5, 1.5]}
+        round={0.08}
+        color={color}
+      />
+      <Block
+        at={[0, 1.15, -0.55]}
+        size={[3.6, 1, 0.25]}
+        round={0.07}
+        color={color}
+      />
+      {[-1.65, 1.65].map((x) => (
+        <Block
+          key={x}
+          at={[x, 0.85, 0]}
+          size={[0.2, 0.65, 1.5]}
+          round={0.05}
+          color={color}
+        />
+      ))}
+      {[-0.82, 0.82].map((x, i) => (
+        <Block
+          key={x}
+          at={[x, 1.15, -0.22]}
+          rotation={[0.16, 0, i ? 0.2 : -0.16]}
+          size={[0.72, 0.64, 0.25]}
+          round={0.13}
+          color={i ? '#827c6b' : '#d8d2c2'}
+        />
+      ))}
+      {[-1.3, 1.3].map((x) => (
+        <Cylinder
+          key={x}
+          at={[x, 0.16, 0]}
+          radius={0.08}
+          height={0.3}
+          color={wood}
+        />
+      ))}
+    </group>
+  );
+}
+function Books({ at, count = 8 }: { at: V3; count?: number }) {
+  return (
+    <group position={at}>
+      {Array.from({ length: count }, (_, i) => (
+        <Block
+          key={i}
+          at={[i * 0.21, 0.3 + (i % 3) * 0.035, 0]}
+          size={[0.16, 0.6 + (i % 3) * 0.07, 0.36]}
+          rotation={[0, 0, i === count - 1 ? -0.16 : 0]}
+          color={['#a2957b', '#8b725b', '#58615e', '#8e9581', '#d4cabb'][i % 5]}
+        />
+      ))}
+    </group>
+  );
+}
+function Shelf({ at, rotation = [0, 0, 0] }: { at: V3; rotation?: V3 }) {
+  return (
+    <group position={at} rotation={rotation}>
+      <Block at={[0, 2, 0]} size={[3.3, 4, 0.35]} color="#514332" />
+      {[-1.6, 1.6].map((x) => (
+        <Block key={x} at={[x, 2, 0.22]} size={[0.14, 4, 0.7]} color={wood} />
+      ))}
+      {[0.3, 1.25, 2.2, 3.15].map((y, i) => (
+        <group key={y}>
+          <Block at={[0, y, 0.23]} size={[3.3, 0.12, 0.75]} color="#957c5c" />
+          <Books at={[-1.35, y + 0.06, 0.25]} count={i % 2 ? 10 : 12} />
+        </group>
+      ))}
+    </group>
+  );
+}
+function Table({ at, round = false }: { at: V3; round?: boolean }) {
+  return (
+    <group position={at}>
+      {round ? (
+        <Cylinder
+          at={[0, 0.78, 0]}
+          radius={1.1}
+          height={0.16}
+          color="#ab9e83"
+        />
+      ) : (
+        <Block
+          at={[0, 1.12, 0]}
+          size={[3.9, 0.18, 1.5]}
+          color="#74624d"
+          round={0.08}
+        />
+      )}
+      {(round ? [-0.5, 0.5] : [-1.5, 1.5]).map((x) => (
+        <Block
+          key={x}
+          at={[x, 0.5, 0]}
+          size={[0.15, 1, round ? 0.7 : 1.1]}
+          color="#484436"
+        />
+      ))}
+    </group>
+  );
+}
+function Window({ at, rotation = [0, 0, 0] }: { at: V3; rotation?: V3 }) {
+  return (
+    <group position={at} rotation={rotation}>
+      <Block size={[3.6, 3.8, 0.08]} color="#444d48" />
+      <mesh position={[0, 0, 0.048]}>
+        <planeGeometry args={[3.45, 3.65]} />
+        <meshStandardMaterial
+          color="#b8c5c3"
+          metalness={0.2}
+          roughness={0.21}
+        />
+      </mesh>
+      {[-0.58, 0.58].map((x) => (
+        <Block
+          key={x}
+          at={[x, 0, 0.08]}
+          size={[0.045, 3.68, 0.055]}
+          color="#444d48"
+        />
+      ))}
+      <Block at={[0, -0.58, 0.08]} size={[3.5, 0.045, 0.055]} color="#444d48" />
+      <Block at={[0, -1.93, 0.13]} size={[3.75, 0.09, 0.34]} color="#d3d0c3" />
+    </group>
+  );
+}
+function Rug({
+  at,
+  color,
+  radius = 2.4,
+}: {
+  at: V3;
+  color: string;
+  radius?: number;
+}) {
+  return (
+    <group position={at}>
+      <Cylinder
+        at={[0, 0.025, 0]}
+        radius={radius}
+        height={0.035}
+        color={color}
+      />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.048, 0]}>
+        <ringGeometry args={[radius - 0.18, radius - 0.12, 64]} />
+        <meshStandardMaterial color={cream} />
+      </mesh>
+    </group>
+  );
+}
+function Mobile({ at, reduced }: { at: V3; reduced: boolean }) {
+  const ref = useRef<THREE.Group>(null);
+  useFrame(({ clock }) => {
+    if (ref.current && !reduced)
+      ref.current.rotation.y = clock.elapsedTime * 0.15;
+  });
+  return (
+    <group position={at} ref={ref}>
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[1.8, 0.035, 8, 50]} />
+        <meshStandardMaterial color="#a39372" metalness={0.5} roughness={0.5} />
+      </mesh>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <group
+          key={i}
+          position={[Math.cos(i * 1.256) * 1.8, 0, Math.sin(i * 1.256) * 1.8]}
+        >
+          <Cylinder
+            at={[0, -0.4 - (i % 2) * 0.15, 0]}
+            radius={0.012}
+            height={0.8 + (i % 2) * 0.3}
+            color="#a39372"
+          />
+          <mesh position={[0, -0.92 - (i % 2) * 0.3, 0]} rotation={[0, 0, 0.4]}>
+            <octahedronGeometry args={[0.22]} />
+            <meshStandardMaterial
+              color={['#9e957f', '#bbb199', '#696f66'][i % 3]}
+            />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  );
+}
+function Exhibit({
+  at,
+  rotation = [0, 0, 0],
+  item,
+  index,
+  accent,
+  reduced,
+  onInspect,
+  small = false,
+}: {
+  at: V3;
+  rotation?: V3;
+  item: WorldItem;
+  index: number;
   accent: string;
-  position: [number, number, number];
-  camera: [number, number, number];
-  look: [number, number, number];
-}> = {
-  hub: { label: 'The Sunroom', subtitle: 'Meet Mahera', color: '#f7d8bb', accent: '#dd765a', position: [0, 0, 4], camera: [0, 1.72, 10.5], look: [0, 1.7, 3.5] },
-  education: { label: 'The Reading Room', subtitle: 'Where curiosity grew', color: '#d9b899', accent: '#a05c45', position: [-13, 0, 0], camera: [-13, 1.7, 5.8], look: [-13, 1.8, 0] },
-  experience: { label: 'The Blue Study', subtitle: 'Ideas became impact', color: '#b8d7de', accent: '#3e7c8a', position: [13, 0, 0], camera: [13, 1.7, 5.8], look: [13, 1.8, 0] },
-  projects: { label: 'The Project Attic', subtitle: 'Ideas become systems', color: '#cfbee5', accent: '#7555a6', position: [0, 0, -10], camera: [0, 1.8, -3.8], look: [0, 1.8, -10] },
-  skills: { label: 'The Garden Workshop', subtitle: 'Tools in practice', color: '#bed4b2', accent: '#527851', position: [-13, 0, -14], camera: [-13, 1.7, -8.2], look: [-13, 1.7, -14] },
-  achievements: { label: 'The Golden Gallery', subtitle: 'Milestones with meaning', color: '#ecd59b', accent: '#b77930', position: [13, 0, -14], camera: [13, 1.75, -8.2], look: [13, 1.75, -14] },
-  contact: { label: 'The Tea Lounge', subtitle: 'Stay for a conversation', color: '#b9ddd1', accent: '#33776d', position: [0, 0, -25], camera: [0, 1.7, -19.2], look: [0, 1.6, -25] },
-};
-
-const experiences: WorldItem[] = [
-  { eyebrow: '2023—2025 · 30+ INITIATIVES', title: 'Mindscape Communication', body: 'Junior Executive, Planning & Project Management. Structured briefs, timelines, content plans, presentations, deliverables, and client follow-up.' },
-  { eyebrow: '2022—2023', title: 'Albeliz.com', body: 'Office Assistant, Admin. Maintained financial documentation, administrative records, and accurate web-content operations.' },
-  { eyebrow: '2020—2021 · 250+ CLIENTS', title: 'Project Finance Solution', body: 'Communication Head, Admin. Managed client communication and logistics for more than 30 meetings.' },
-  { eyebrow: '2020—2021', title: 'CrossRoads Initiative', body: 'Office Administrator. Supported operational activities, internal documentation, and daily coordination.' },
-];
-
-const projects: Array<WorldItem & { image?: string; language: string }> = [
-  { eyebrow: 'SUPPLY CHAIN ANALYTICS', title: 'SCM Analytics Studio', body: 'A control tower for forecasting, inventory, procurement, logistics, risk, and management reporting.', language: 'Python', image: '/assets/scm-studio.png', link: 'https://github.com/Mah-era/scm-analytics-studio', linkLabel: 'Open repository' },
-  { eyebrow: 'DEMAND PLANNING', title: 'ForecastSync', body: 'A guided file-to-forecast workflow with data validation, quality scoring, inventory recommendations, and risk maps.', language: 'TypeScript', image: '/assets/forecastsync.png', link: 'https://github.com/Mah-era/ForecastSync', linkLabel: 'Open repository' },
-  { eyebrow: 'DISTRIBUTION OPERATIONS', title: 'SCM Distributor Management', body: 'An ERP-style operational interface spanning orders, inventory, transport, delivery, returns, and cost.', language: 'JavaScript', image: '/assets/distributor-management.png', link: 'https://github.com/Mah-era/scm-distributor-management', linkLabel: 'Open repository' },
-  { eyebrow: 'BUSINESS INTELLIGENCE', title: 'InsightBI', body: 'A collaborative BI workspace for ingesting data, modelling relationships, building reports, and sharing insights.', language: 'TypeScript', image: '/assets/insightbi.png', link: 'https://github.com/Mah-era/insightbi', linkLabel: 'Open repository' },
-  { eyebrow: 'PRODUCT × OPERATIONS', title: 'FruTea', body: 'A consumer concept connecting brand storytelling with demand, sourcing, inventory, and digital experience.', language: 'HTML', image: '/assets/frutea-site.webp', link: 'https://github.com/Mah-era/frutea', linkLabel: 'Open repository' },
-  { eyebrow: 'LEARNING SIMULATION', title: 'Purrfect Supply Chain', body: 'A playable simulation of the bullwhip effect, demand variance, service level, and inventory decisions.', language: 'JavaScript', image: '/assets/purrfect-supply-chain.webp', link: 'https://github.com/Mah-era/cozy-cat-scm-bull-game', linkLabel: 'Open repository' },
-  ...[
-    ['save-farzu', 'Mini-game collection', 'HTML'], ['PawPaw-World-3D-v1', 'Archived 3D interactive world', 'JavaScript'], ['pawpaw-world', 'Canvas exploration game', 'HTML'], ['pawpaw-power-retro-game', 'Retro browser game', 'JavaScript'], ['scm-distributor-management-frontenddesign', 'Distribution interface concept', 'JavaScript'], ['finance-tracker', 'Personal finance tool', 'JavaScript'], ['cse-coursework', 'Programming coursework archive', 'Python'], ['moodtracker', 'Personal wellbeing tracker', 'JavaScript'], ['focusflow-planner', 'Productivity planning tool', 'JavaScript'],
-  ].map(([title, body, language]) => ({ eyebrow: 'MEDIA & CASE STUDY PLACEHOLDER', title, body, language, link: `https://github.com/Mah-era/${title}`, linkLabel: 'Open repository' })),
-];
-
-function Plant({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
-  return <group position={position} scale={scale}>
-    <mesh position={[0, .32, 0]} castShadow><cylinderGeometry args={[.35, .25, .62, 18]} /><meshStandardMaterial color="#c87355" roughness={.8} /></mesh>
-    <mesh position={[0, .9, 0]} castShadow><cylinderGeometry args={[.035, .055, 1.1, 10]} /><meshStandardMaterial color="#446d45" /></mesh>
-    {[[-.28, .92, 0], [.3, 1.12, .05], [-.12, 1.35, .02], [.16, 1.55, 0]].map((p, i) => <mesh key={i} position={p as [number, number, number]} rotation={[0, 0, i % 2 ? -.45 : .45]} castShadow><sphereGeometry args={[.28, 16, 12]} /><meshStandardMaterial color={i % 2 ? '#668c5b' : '#7ca66b'} roughness={.9} /></mesh>)}
-  </group>;
-}
-
-function FloorLamp({ position, color = '#f3c570' }: { position: [number, number, number]; color?: string }) {
-  return <group position={position}>
-    <mesh position={[0, .08, 0]}><cylinderGeometry args={[.28, .34, .16, 24]} /><meshStandardMaterial color="#8c6248" /></mesh>
-    <mesh position={[0, 1.4, 0]}><cylinderGeometry args={[.035, .04, 2.7, 12]} /><meshStandardMaterial color="#8c6248" /></mesh>
-    <mesh position={[0, 2.72, 0]} castShadow><coneGeometry args={[.52, .82, 24, 1, true]} /><meshStandardMaterial color="#f7e5bd" side={THREE.DoubleSide} roughness={.8} /></mesh>
-    <pointLight position={[0, 2.58, 0]} intensity={6} distance={5} color={color} />
-  </group>;
-}
-
-function Bookshelf({ position, rotation = [0, 0, 0] }: { position: [number, number, number]; rotation?: [number, number, number] }) {
-  const colors = ['#d96f5f', '#e6b45c', '#5d8d89', '#8269a8', '#7e9d65'];
-  return <group position={position} rotation={rotation}>
-    <RoundedBox args={[2.55, 3.1, .48]} radius={.06} smoothness={3} position={[0, 1.55, 0]} castShadow><meshStandardMaterial color="#8a5a3c" roughness={.75} /></RoundedBox>
-    {[.62, 1.4, 2.18].map((y, shelf) => <group key={y}>
-      <mesh position={[0, y, .3]}><boxGeometry args={[2.28, .09, .58]} /><meshStandardMaterial color="#6e452f" /></mesh>
-      {Array.from({ length: 8 }).map((_, i) => <mesh key={i} position={[-.94 + i * .27, y + .25, .34]} rotation={[0, 0, (i % 3 - 1) * .04]} castShadow><boxGeometry args={[.18 + (i % 2) * .04, .42 + (i % 3) * .08, .19]} /><meshStandardMaterial color={colors[(i + shelf) % colors.length]} roughness={.8} /></mesh>)}
-    </group>)}
-  </group>;
-}
-
-function Chair({ position, rotation = [0, 0, 0], color = '#d88767' }: { position: [number, number, number]; rotation?: [number, number, number]; color?: string }) {
-  return <group position={position} rotation={rotation}>
-    <RoundedBox args={[.9, .16, .86]} radius={.08} position={[0, .74, 0]} castShadow><meshStandardMaterial color={color} roughness={.82} /></RoundedBox>
-    <RoundedBox args={[.9, .9, .14]} radius={.08} position={[0, 1.18, .36]} castShadow><meshStandardMaterial color={color} roughness={.82} /></RoundedBox>
-    {[[-.33, .35, -.3], [.33, .35, -.3], [-.33, .35, .3], [.33, .35, .3]].map((p, i) => <mesh key={i} position={p as [number, number, number]}><cylinderGeometry args={[.035, .045, .7, 8]} /><meshStandardMaterial color="#6c4936" /></mesh>)}
-  </group>;
-}
-
-function Sofa({ position, color }: { position: [number, number, number]; color: string }) {
-  return <group position={position}>
-    <RoundedBox args={[3.25, .55, 1.15]} radius={.2} position={[0, .55, 0]} castShadow><meshStandardMaterial color={color} roughness={.95} /></RoundedBox>
-    <RoundedBox args={[3.2, 1.08, .38]} radius={.2} position={[0, 1.12, .4]} castShadow><meshStandardMaterial color={color} roughness={.95} /></RoundedBox>
-    {[-1.5, 1.5].map(x => <RoundedBox key={x} args={[.34, .72, 1.18]} radius={.15} position={[x, .78, 0]} castShadow><meshStandardMaterial color={color} /></RoundedBox>)}
-    {[-.7, .7].map((x, i) => <RoundedBox key={x} args={[.72, .45, .18]} radius={.12} position={[x, 1.17, -.03]}><meshStandardMaterial color={i ? '#f3d8a3' : '#e9a792'} /></RoundedBox>)}
-  </group>;
-}
-
-function RoomShell({ room }: { room: RoomId }) {
-  const data = roomData[room];
-  const [x, , z] = data.position;
+  reduced: boolean;
+  onInspect: (item: WorldItem) => void;
+  small?: boolean;
+}) {
+  const [hover, setHover] = useState(false);
+  const suppressClick = useContext(LookContext);
+  useEffect(
+    () => () => {
+      document.body.style.cursor = '';
+    },
+    [],
+  );
   return (
-    <group position={[x, 0, z]}>
-      <mesh position={[0, -.13, 0]} receiveShadow><boxGeometry args={[10, .24, 10]} /><meshStandardMaterial color="#b88056" roughness={.84} /></mesh>
-      {Array.from({ length: 14 }).map((_, i) => <mesh key={i} position={[-4.65 + i * .72, .005, 0]} receiveShadow><boxGeometry args={[.02, .02, 9.7]} /><meshStandardMaterial color="#8e6248" /></mesh>)}
-      <mesh position={[0, 3.25, -4.9]} receiveShadow><boxGeometry args={[10, 6.5, .2]} /><meshStandardMaterial color={data.color} roughness={.92} /></mesh>
-      <mesh position={[-4.9, 3.25, 0]} receiveShadow><boxGeometry args={[.2, 6.5, 10]} /><meshStandardMaterial color={data.color} roughness={.92} /></mesh>
-      <mesh position={[4.9, 3.25, 0]} receiveShadow><boxGeometry args={[.2, 6.5, 10]} /><meshStandardMaterial color={data.color} roughness={.92} /></mesh>
-      <mesh position={[0, 6.4, 0]} receiveShadow><boxGeometry args={[10, .16, 10]} /><meshStandardMaterial color="#fff4df" roughness={.95} /></mesh>
-      <mesh position={[0, .23, -4.76]}><boxGeometry args={[9.6, .28, .12]} /><meshStandardMaterial color="#f8ecda" /></mesh>
-      <RoundedBox args={[5.5, .06, 3.4]} radius={.1} position={[0, .02, -.3]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow><meshStandardMaterial color={data.accent} opacity={.32} transparent roughness={1} /></RoundedBox>
-      <group position={[2.65, 3.28, -4.72]}>
-        <mesh><planeGeometry args={[3.15, 2.55]} /><meshStandardMaterial color="#a9d8e8" emissive="#c7eaf2" emissiveIntensity={.25} /></mesh>
-        <mesh position={[0, 0, .04]}><boxGeometry args={[.1, 2.7, .1]} /><meshStandardMaterial color="#fff3de" /></mesh>
-        <mesh position={[0, 0, .04]}><boxGeometry args={[3.3, .1, .1]} /><meshStandardMaterial color="#fff3de" /></mesh>
-        <mesh position={[0, 0, .05]}><ringGeometry args={[.32, .68, 32, 1, 0, Math.PI]} /><meshStandardMaterial color="#fff3de" /></mesh>
-      </group>
-      <mesh position={[0, 5.3, 0]}><cylinderGeometry args={[.03, .03, 1.5, 10]} /><meshStandardMaterial color="#74523e" /></mesh>
-      <mesh position={[0, 4.55, 0]}><sphereGeometry args={[.18, 20, 20]} /><meshStandardMaterial color="#fff1bd" emissive="#ffd889" emissiveIntensity={2} /></mesh>
-      <mesh position={[0, 4.82, 0]}><coneGeometry args={[.68, .55, 28, 1, true]} /><meshStandardMaterial color="#f8dfad" side={THREE.DoubleSide} /></mesh>
-      <pointLight position={[0, 4.45, 0]} intensity={8} distance={10} color="#ffd99d" castShadow />
-      <Text position={[-3.8, 5.35, -4.72]} fontSize={.28} color={data.accent} anchorX="left">{data.label}</Text>
-      <Text position={[-3.8, 4.96, -4.72]} fontSize={.115} color="#5f5248" anchorX="left">{data.subtitle.toUpperCase()}</Text>
+    <group position={at} rotation={rotation}>
+      <Float
+        speed={reduced ? 0 : 1.3}
+        floatIntensity={reduced ? 0 : 0.055}
+        rotationIntensity={0}
+      >
+        <group
+          scale={hover ? 1.035 : 1}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!suppressClick?.current) onInspect(item);
+          }}
+          onPointerOver={(e) => {
+            e.stopPropagation();
+            setHover(true);
+            document.body.style.cursor = 'pointer';
+          }}
+          onPointerOut={() => {
+            setHover(false);
+            document.body.style.cursor = '';
+          }}
+        >
+          <Block
+            size={[small ? 2 : 2.9, small ? 1.48 : 2.15, 0.16]}
+            color={hover ? '#e5dfcd' : cream}
+            round={0.1}
+          />
+          <Block
+            at={[0, 0, -0.1]}
+            size={[small ? 2.12 : 3.04, small ? 1.6 : 2.3, 0.13]}
+            color={accent}
+            round={0.08}
+          />
+          {item.image ? (
+            <Suspense fallback={null}>
+              <SceneImage
+                url={item.image}
+                position={[0, 0.18, 0.092]}
+                scale={small ? [1.82, 0.95] : [2.65, 1.45]}
+                toneMapped={false}
+              />
+            </Suspense>
+          ) : (
+            <>
+              <Text
+                position={[0, small ? 0.16 : 0.25, 0.1]}
+                fontSize={small ? 0.18 : 0.25}
+                maxWidth={small ? 1.65 : 2.48}
+                lineHeight={1.15}
+                textAlign="center"
+                color="#2e332f"
+              >
+                {item.title}
+              </Text>
+              <Text
+                position={[0, small ? -0.35 : -0.42, 0.1]}
+                fontSize={0.1}
+                maxWidth={small ? 1.7 : 2.5}
+                textAlign="center"
+                color={accent}
+              >
+                {item.eyebrow}
+              </Text>
+            </>
+          )}
+          <Text
+            position={[-(small ? 0.86 : 1.29), small ? -0.59 : -0.9, 0.105]}
+            anchorX="left"
+            fontSize={0.1}
+            color={accent}
+          >
+            {String(index + 1).padStart(2, '0')}
+          </Text>
+          <Text
+            position={[small ? 0.86 : 1.29, small ? -0.59 : -0.9, 0.105]}
+            anchorX="right"
+            fontSize={0.1}
+            maxWidth={small ? 1.4 : 2.2}
+            color="#66675e"
+          >
+            {hover
+              ? 'OPEN STORY ↗'
+              : item.image
+                ? item.title
+                : 'A CLOSER LOOK ↗'}
+          </Text>
+        </group>
+      </Float>
     </group>
   );
 }
-
-function FloatingDisplay({ position, rotation = [0, 0, 0], item, color, image, scale = 1 }: { position: [number, number, number]; rotation?: [number, number, number]; item: WorldItem; color: string; image?: string; scale?: number }) {
-  const [hovered, setHovered] = useState(false);
-  const onInspect = useContext(InspectContext);
-  return (
-    <Float speed={1.5} rotationIntensity={0.09} floatIntensity={0.22}>
-      <group position={position} rotation={rotation} scale={scale} onClick={(event) => { event.stopPropagation(); onInspect(item); }} onPointerOver={(event) => { event.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }} onPointerOut={() => { setHovered(false); document.body.style.cursor = 'default'; }} userData={{ item }}>
-        <RoundedBox args={[2.55, 1.62, 0.12]} radius={0.08} smoothness={4} castShadow>
-          <meshStandardMaterial color={hovered ? '#fff9ed' : '#f5ead8'} emissive={color} emissiveIntensity={hovered ? .12 : .025} metalness={0.02} roughness={0.6} />
-        </RoundedBox>
-        {image ? <DreiImage url={image} position={[0, 0.12, 0.071]} scale={[2.3, 1.12]} transparent toneMapped={false} /> : (
-          <group position={[0, 0.08, 0.072]}>
-            <mesh><planeGeometry args={[2.28, 1.08]} /><meshBasicMaterial color={hovered ? '#fffdf7' : '#fff8e9'} /></mesh>
-            <Text position={[0, 0.12, 0.01]} fontSize={0.18} maxWidth={1.9} textAlign="center" color="#3f3630">{item.title}</Text>
-            <Text position={[0, -0.22, 0.01]} fontSize={0.08} maxWidth={1.8} textAlign="center" color={color}>{item.eyebrow}</Text>
-          </group>
-        )}
-        <Text position={[0, -0.68, 0.073]} fontSize={0.09} color="#57483e" anchorX="center">{hovered ? 'COME CLOSER' : item.title.toUpperCase()}</Text>
-      </group>
-    </Float>
-  );
-}
-
-function Portal({ position, rotation = [0, 0, 0], room, onEnter }: { position: [number, number, number]; rotation?: [number, number, number]; room: RoomId; onEnter: (room: RoomId) => void }) {
-  const [hovered, setHovered] = useState(false);
+function RoomShell({ room, index }: { room: RoomId; index: number }) {
   const data = roomData[room];
-  return (
-    <group position={position} rotation={rotation} onClick={(event) => { event.stopPropagation(); onEnter(room); }} onPointerOver={() => { setHovered(true); document.body.style.cursor = 'pointer'; }} onPointerOut={() => { setHovered(false); document.body.style.cursor = 'default'; }}>
-      <RoundedBox args={[2.45, 3.55, .28]} radius={.18} smoothness={5} castShadow><meshStandardMaterial color="#8a5a3d" roughness={.72} /></RoundedBox>
-      <RoundedBox args={[2.05, 3.12, .12]} radius={.14} smoothness={5} position={[0, 0, .18]}><meshStandardMaterial color={hovered ? '#fff2cd' : data.color} emissive={data.accent} emissiveIntensity={hovered ? .13 : .02} roughness={.84} /></RoundedBox>
-      <mesh position={[.72, -.1, .31]}><sphereGeometry args={[.09, 18, 18]} /><meshStandardMaterial color="#d49b35" metalness={.5} roughness={.35} /></mesh>
-      <Text position={[0, .25, .31]} fontSize={.18} maxWidth={1.5} textAlign="center" color="#4e4037">{data.label}</Text>
-      <Text position={[0, -.12, .31]} fontSize={.09} color={data.accent}>{hovered ? 'OPEN THE DOOR →' : data.subtitle.toUpperCase()}</Text>
-    </group>
-  );
-}
-
-function Hub({ onEnter, onInspect }: { onEnter: (room: RoomId) => void; onInspect: (item: WorldItem) => void }) {
   return (
     <group>
-      <RoomShell room="hub" />
-      <group position={[0, 0, 4]}>
-        <RoundedBox args={[4.8, 0.22, 2.1]} radius={0.12} smoothness={4} position={[0, 1.02, 0]} castShadow><meshStandardMaterial color="#7d5336" roughness={0.38} /></RoundedBox>
-        {[[-1.9, 0.48, -0.62], [1.9, 0.48, -0.62], [-1.9, 0.48, 0.62], [1.9, 0.48, 0.62]].map((p, i) => <mesh position={p as [number, number, number]} key={i} castShadow><boxGeometry args={[0.17, 0.95, 0.17]} /><meshStandardMaterial color="#4c3023" /></mesh>)}
-        <Chair position={[-2.8, 0, 0]} rotation={[0, Math.PI / 2, 0]} color="#d7846a" />
-        <Chair position={[2.8, 0, 0]} rotation={[0, -Math.PI / 2, 0]} color="#d7846a" />
-        <Plant position={[4, 0, 2.9]} scale={1.15} />
-        <FloorLamp position={[-4.05, 0, 2.85]} />
-        <FloatingDisplay position={[0, 2.25, -0.25]} rotation={[-0.12, 0, 0]} color="#f2bb62" scale={1.12} item={{ eyebrow: 'SUPPLY CHAIN · OPERATIONS · ANALYTICS', title: 'Mahera Tasfee', body: 'A systems-minded BBA candidate who combines commercial awareness, clear communication, analytical curiosity, and hands-on execution.' }} />
-        <Portal position={[-3.55, 1.7, -4.72]} room="education" onEnter={onEnter} />
-        <Portal position={[3.55, 1.7, -4.72]} room="experience" onEnter={onEnter} />
-        <Portal position={[0, 1.7, -4.72]} room="projects" onEnter={onEnter} />
-      </group>
+      <Block at={[0, -0.17, 0]} size={[14, 0.3, 16]} color="#c6c1b4" />
+      {Array.from({ length: 18 }, (_, i) => (
+        <Block
+          key={i}
+          at={[-6.6 + i * 0.77, 0.002, 0]}
+          size={[0.022, 0.006, 15.9]}
+          color="#b4b0a4"
+        />
+      ))}
+      {[-7, 7].map((x) => (
+        <group key={x}>
+          <Block at={[x, 3, 0]} size={[0.22, 6, 16]} color={data.color} />
+          <Block
+            at={[x * 0.985, 0.65, 0]}
+            size={[0.25, 1.3, 16]}
+            color={cream}
+          />
+          <Block
+            at={[x * 0.977, 1.34, 0]}
+            size={[0.3, 0.09, 16]}
+            color="#c8c1b1"
+          />
+          {[-6, -3, 0, 3, 6].map((z) => (
+            <group key={z}>
+              <Block
+                at={[x * 0.964, 0.66, z]}
+                size={[0.03, 0.9, 2.6]}
+                color="#cbc7bb"
+              />
+              <Block
+                at={[x * 0.958, 0.66, z]}
+                size={[0.03, 0.77, 2.42]}
+                color={cream}
+              />
+            </group>
+          ))}
+        </group>
+      ))}
+      <ArchWall z={-8} color={data.color} />
+      <Block at={[0, 6.05, 0]} size={[14, 0.12, 16]} color="#e8e4d9" />
+      {room !== 'projects' && (
+        <Window at={[6.83, 3.5, 1.8]} rotation={[0, -Math.PI / 2, 0]} />
+      )}
+      {room !== 'education' && room !== 'projects' && (
+        <Window at={[-6.83, 3.5, 2.1]} rotation={[0, Math.PI / 2, 0]} />
+      )}
+      {[-5.1, 5.1].map((x) => (
+        <Block
+          key={x}
+          at={[x, 5.9, 0]}
+          size={[0.22, 0.28, 16]}
+          color="#877660"
+        />
+      ))}
+      <Text
+        position={[0, 5.1, -7.63]}
+        fontSize={0.25}
+        letterSpacing={0.04}
+        color={data.ink}
+      >
+        {index === 6
+          ? 'THANK YOU FOR VISITING'
+          : roomData[roomOrder[index + 1]].label.toUpperCase()}
+      </Text>
+      <pointLight
+        position={[0, 4, 0]}
+        color="#fff7e8"
+        intensity={9}
+        distance={15}
+        decay={2}
+      />
+      {room !== 'skills' && (
+        <group position={[0, 5.35, -2]}>
+          <Cylinder
+            at={[0, 0.4, 0]}
+            radius={0.025}
+            height={1}
+            color="#99896c"
+          />
+          <mesh>
+            <sphereGeometry args={[0.45, 24, 16]} />
+            <meshStandardMaterial
+              color="#e9e1cb"
+              emissive="#fff4d9"
+              emissiveIntensity={0.45}
+            />
+          </mesh>
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[0.54, 0.065, 10, 32]} />
+            <meshStandardMaterial color="#99896c" />
+          </mesh>
+        </group>
+      )}
     </group>
   );
 }
-
-function EducationRoom() {
-  const items: WorldItem[] = [
-    { eyebrow: 'EXPECTED 2026', title: 'North South University', body: 'Bachelor of Business Administration. Major in Supply Chain Management and Marketing.' },
-    { eyebrow: '2025—PRESENT', title: 'Independent Research Exposure', body: 'Literature review and problem framing across FMCG, AIoT, RMG, operations, and supply-chain management.' },
-    { eyebrow: 'FOUNDATION', title: 'Commercial + Operational Thinking', body: 'An interdisciplinary foundation connecting demand, marketing, information, resources, and execution.' },
-  ];
-  return <group><RoomShell room="education" /><Bookshelf position={[-16.4, 0, 2.8]} /><Plant position={[-9.3, 0, 3.1]} /><FloorLamp position={[-10.1, 0, -2.6]} />{items.map((item, index) => <FloatingDisplay key={item.title} position={[-15.7 + index * 2.7, 2.15 + (index % 2) * 0.45, -0.8]} rotation={[0, 0.08 * (index - 1), 0]} item={item} color="#a05c45" />)}</group>;
+function Room({
+  index,
+  reduced,
+  onInspect,
+  onTravel,
+}: {
+  index: number;
+  reduced: boolean;
+  onInspect: (item: WorldItem) => void;
+  onTravel: (index: number) => void;
+}) {
+  const room = roomOrder[index],
+    data = roomData[room],
+    items = roomItems[room];
+  const suppressClick = useContext(LookContext);
+  return (
+    <group position={[0, 0, -index * 16]}>
+      <RoomShell room={room} index={index} />
+      <Rug
+        at={[0, 0, -1]}
+        color={room === 'hub' ? '#bcb7a7' : '#c6c1b3'}
+        radius={2.65}
+      />
+      {room === 'hub' && (
+        <>
+          <Sofa at={[-4, 0.0, -1]} rotation={[0, 0.38, 0]} />
+          <Table at={[-3.6, 0, 1.15]} round />
+          <Flowers at={[-3.6, 0.89, 1.15]} />
+          <Lamp at={[-5.7, 0, -3]} />
+          <Plant at={[5.45, 0, 3.3]} scale={1.25} />
+          <Shelf at={[6.6, 0, -3.8]} rotation={[0, -Math.PI / 2, 0]} />
+          <Mobile at={[0, 5.5, -1]} reduced={reduced} />
+        </>
+      )}
+      {room === 'education' && (
+        <>
+          <Shelf at={[-6.6, 0, -3.8]} rotation={[0, Math.PI / 2, 0]} />
+          <Shelf at={[6.6, 0, -3.8]} rotation={[0, -Math.PI / 2, 0]} />
+          <Sofa at={[-4.5, 0, 0.6]} color="#998775" rotation={[0, 0.7, 0]} />
+          <Lamp at={[-5.8, 0, -2]} />
+          <Table at={[4.5, 0, 0.2]} round />
+          <Books at={[3.9, 0.87, 0.2]} count={4} />
+          <Plant at={[5.7, 0, 3.7]} />
+        </>
+      )}
+      {room === 'experience' && (
+        <>
+          <Table at={[-3.9, 0, -1]} />
+          <Table at={[4, 0, -2]} />
+          <Block
+            at={[-3.9, 1.9, -1.3]}
+            size={[2.4, 1.45, 0.15]}
+            color={blue}
+            round={0.1}
+          />
+          <Block
+            at={[-3.9, 1.86, -1.2]}
+            size={[2.16, 1.18, 0.03]}
+            color="#bfc7c3"
+          />
+          <Books at={[2.5, 1.22, -2]} count={6} />
+          <Lamp at={[-5.9, 0, 2.5]} color="#c0b59e" />
+          <Plant at={[5.8, 0, 3.4]} pot={blue} />
+        </>
+      )}
+      {room === 'projects' && (
+        <>
+          <Table at={[-4.4, 0, -1]} />
+          <Table at={[4.4, 0, -1]} />
+          <Mobile at={[0, 5.5, -2]} reduced={reduced} />
+          <Plant at={[-5.7, 0, 4]} />
+          <Plant at={[5.7, 0, 4]} pot={blue} />
+          <Lamp at={[5.8, 0, -6]} color="#c2c7c3" />
+          {[-6, -2, 2, 6].map((z) => (
+            <Block
+              key={z}
+              at={[0, 5.85, z]}
+              size={[14, 0.22, 0.22]}
+              color={wood}
+            />
+          ))}
+        </>
+      )}
+      {room === 'skills' && (
+        <>
+          <Table at={[-4, 0, -1.1]} />
+          <Flowers at={[-4, 1.23, -1.1]} />
+          <Plant at={[-5.8, 0, 2.7]} scale={1.6} />
+          <Plant at={[5.5, 0, 3.5]} scale={1.5} />
+          <Plant at={[4.5, 0, -4.4]} scale={1.8} />
+          <Shelf at={[-6.6, 0, -3.8]} rotation={[0, Math.PI / 2, 0]} />
+          <mesh position={[0, 5.975, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <planeGeometry args={[5.2, 12]} />
+            <meshBasicMaterial color="#e1e7e1" side={THREE.DoubleSide} />
+          </mesh>
+          {[-2.65, 2.65].map((x) => (
+            <Block
+              key={x}
+              at={[x, 5.88, 0]}
+              size={[0.1, 0.15, 12.2]}
+              color="#747e6c"
+            />
+          ))}
+          {[-6, 0, 6].map((z) => (
+            <Block
+              key={z}
+              at={[0, 5.88, z]}
+              size={[5.4, 0.15, 0.1]}
+              color="#747e6c"
+            />
+          ))}
+        </>
+      )}
+      {room === 'achievements' && (
+        <>
+          <Mobile at={[0, 5.5, -1]} reduced={reduced} />
+          {[-4.6, 4.6].map((x, i) => (
+            <group key={x}>
+              <Cylinder
+                at={[x, 0.7, -1]}
+                radius={0.68}
+                height={1.4}
+                color={cream}
+              />
+              <Cylinder
+                at={[x, 1.48, -1]}
+                radius={0.4}
+                height={0.16}
+                color="#998464"
+              />
+              <mesh position={[x, 2, -1]} rotation={[0, 0.4, 0.1]}>
+                <torusKnotGeometry args={[0.3, 0.095, 64, 10]} />
+                <meshStandardMaterial
+                  color={i ? '#b6a17a' : '#60685f'}
+                  metalness={0.4}
+                  roughness={0.3}
+                />
+              </mesh>
+            </group>
+          ))}
+          <Plant at={[5.8, 0, 4]} />
+          <Lamp at={[-5.8, 0, 3.5]} />
+        </>
+      )}
+      {room === 'contact' && (
+        <>
+          <Sofa at={[-4.4, 0, -0.8]} rotation={[0, 0.5, 0]} color="#b4ada0" />
+          <Sofa at={[4.4, 0, -0.8]} rotation={[0, -0.5, 0]} color="#b4ada0" />
+          <Table at={[-3.3, 0, 1.65]} round />
+          <Flowers at={[-3.3, 0.87, 1.65]} color="#ddd2b9" />
+          <Lamp at={[-5.8, 0, -4]} color="#c9bca2" />
+          <Plant at={[5.8, 0, 3.8]} scale={1.4} />
+        </>
+      )}
+      {items.map((item, i) => {
+        const many = room === 'projects',
+          side = i % 2 === 0 ? -1 : 1;
+        const at: V3 = many
+          ? i < 6
+            ? [side * 4.3, 1.35 + Math.floor(i / 2) * 1.85, -7.42]
+            : [side * 6.75, 2.55, 4.8 - Math.floor((i - 6) / 2) * 2.7]
+          : [side * 4.3, 2.1 + Math.floor(i / 2) * 2.45, -7.4];
+        const rotation: V3 =
+          many && i >= 6 ? [0, (-side * Math.PI) / 2, 0] : [0, 0, 0];
+        return (
+          <Exhibit
+            key={item.title}
+            at={at}
+            rotation={rotation}
+            item={item}
+            index={i}
+            accent={data.accent}
+            reduced={reduced}
+            onInspect={onInspect}
+            small={many}
+          />
+        );
+      })}
+      {index < 6 && (
+        <group
+          position={[0, 1.6, -7.7]}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!suppressClick?.current) onTravel(index + 2);
+          }}
+        >
+          <mesh>
+            <ringGeometry args={[0.2, 0.24, 32]} />
+            <meshBasicMaterial color={data.accent} transparent opacity={0.8} />
+          </mesh>
+          <Text position={[0, -0.47, 0.02]} fontSize={0.14} color={data.ink}>
+            CONTINUE →
+          </Text>
+        </group>
+      )}
+    </group>
+  );
 }
-
-function ExperienceRoom() {
-  return <group><RoomShell room="experience" /><RoundedBox args={[3.4, .18, 1.4]} radius={.08} position={[13, .78, 2.1]} castShadow><meshStandardMaterial color="#8d6549" /></RoundedBox><Chair position={[13, 0, 3.15]} color="#5f8e97" /><Plant position={[16.5, 0, 2.8]} /><FloorLamp position={[9.25, 0, 2.8]} color="#ffe0a5" />{experiences.map((item, index) => <FloatingDisplay key={item.title} position={[10.6 + (index % 2) * 3.05, 1.75 + Math.floor(index / 2) * 1.95, -0.8]} rotation={[0, index % 2 ? -0.08 : 0.08, 0]} item={item} color="#3e7c8a" scale={0.92} />)}</group>;
+function Exterior({
+  journey,
+  reduced,
+}: {
+  journey: RefObject<number>;
+  reduced: boolean;
+}) {
+  const door = useRef<THREE.Group>(null);
+  useFrame((_, dt) => {
+    if (door.current)
+      door.current.rotation.y = reduced
+        ? journey.current > 0.12
+          ? -1.65
+          : 0
+        : THREE.MathUtils.damp(
+            door.current.rotation.y,
+            journey.current > 0.12 ? -1.65 : 0,
+            3,
+            dt,
+          );
+  });
+  return (
+    <group>
+      <Block at={[0, -0.48, 1]} size={[18, 0.55, 22]} color="#bbb7aa" />
+      <Block at={[0, -0.16, 10.7]} size={[5.4, 0.15, 6]} color="#d7d3c7" />
+      {[8.9, 10.1, 11.3, 12.5].map((z) => (
+        <Block
+          key={z}
+          at={[0, -0.055, z]}
+          size={[3.1, 0.08, 0.98]}
+          color="#e5e1d5"
+        />
+      ))}
+      {[-4.3, 4.3].map((x) => (
+        <Block key={x} at={[x, 3, 8]} size={[5.4, 6, 0.32]} color="#dbd7cb" />
+      ))}
+      <Block at={[0, 5.45, 8]} size={[3.2, 1.1, 0.32]} color="#dbd7cb" />
+      <Block at={[0, 6.15, 0]} size={[15.2, 0.32, 17.4]} color="#dedbd1" />
+      <Block at={[0, 5.94, 8.5]} size={[15.2, 0.12, 0.48]} color="#6d6250" />
+      <Block at={[0, 5.7, 9.15]} size={[5, 0.16, 2]} color="#797261" />
+      <group position={[-1.58, 0, 8.19]} ref={door}>
+        <Block at={[1.58, 2.45, 0]} size={[3.12, 4.9, 0.2]} color="#6e5943" />
+        {Array.from({ length: 13 }, (_, i) => (
+          <Block
+            key={i}
+            at={[0.13 + i * 0.235, 2.45, 0.11]}
+            size={[0.015, 4.88, 0.018]}
+            color="#524736"
+          />
+        ))}
+        <Block at={[2.82, 2.1, 0.21]} size={[0.045, 1, 0.1]} color="#b7ae99" />
+      </group>
+      <Window at={[-4.45, 3.25, 8.2]} />
+      <Window at={[4.45, 3.25, 8.2]} />
+      <Text
+        position={[-5.8, 0.75, 8.21]}
+        anchorX="left"
+        fontSize={0.21}
+        letterSpacing={0.09}
+        color="#595c53"
+      >
+        MAHERA TASFEE
+      </Text>
+      <Text
+        position={[-5.8, 0.4, 8.21]}
+        anchorX="left"
+        fontSize={0.09}
+        letterSpacing={0.08}
+        color="#75786b"
+      >
+        SUPPLY CHAIN / OPERATIONS / ANALYTICS
+      </Text>
+      {[-6.2, 6.2].map((x) => (
+        <group key={x}>
+          <Block at={[x, 0.4, 10]} size={[1.8, 0.8, 1.35]} color="#8e8c7d" />
+          <Plant
+            at={[x, 0.75, 10]}
+            scale={1.55}
+            color="#69715d"
+            pot="#8e8c7d"
+          />
+        </group>
+      ))}
+      <Block at={[5.1, 0.4, 12]} size={[2.7, 0.12, 0.7]} color="#8b7e68" />
+      {[-0.9, 0.9].map((x) => (
+        <Block
+          key={x}
+          at={[5.1 + x, 0.18, 12]}
+          size={[0.09, 0.35, 0.6]}
+          color="#55594d"
+        />
+      ))}
+    </group>
+  );
 }
-
-function ProjectsRoom() {
-  return <group><RoomShell room="projects" /><Plant position={[-4, 0, -6.7]} /><Plant position={[4, 0, -6.7]} scale={.8} /><FloorLamp position={[-4.1, 0, -12.6]} color="#d8bdff" />{projects.map((item, index) => { const col = index % 5; const row = Math.floor(index / 5); return <FloatingDisplay key={item.title} position={[-3.75 + col * 1.88, 4.5 - row * 1.67, -14.35]} item={item} image={item.image} color="#7555a6" scale={0.66} />; })}</group>;
-}
-
-function SkillsRoom() {
-  const items: WorldItem[] = [
-    { eyebrow: 'ANALYSE', title: 'Decision Intelligence', body: 'Excel, Power BI, data cleaning, forecasting, KPI reporting, and dashboard design.' },
-    { eyebrow: 'OPERATE', title: 'Supply-Chain Thinking', body: 'Demand planning, process mapping, inventory logic, project coordination, and Notion workflows.' },
-    { eyebrow: 'COMMUNICATE', title: 'Stakeholder Clarity', body: 'Client follow-up, presentations, structured documentation, debate, and team communication.' },
-    { eyebrow: 'BUILD', title: 'Digital Prototyping', body: 'React, Next.js, TypeScript, Python, Streamlit, Pandas, SQL, and SQLite.' },
-  ];
-  return <group><RoomShell room="skills" /><Bookshelf position={[-16.6, 0, -10.8]} /><Plant position={[-9.4, 0, -11]} scale={1.2} /><RoundedBox args={[3.7, .22, 1.25]} radius={.1} position={[-13, .9, -11]}><meshStandardMaterial color="#8b6544" /></RoundedBox>{items.map((item, index) => <FloatingDisplay key={item.title} position={[-15.4 + (index % 2) * 3.15, 1.85 + Math.floor(index / 2) * 2.05, -14.5]} item={item} color="#527851" scale={0.94} />)}</group>;
-}
-
-function AchievementRoom() {
-  const items: WorldItem[] = [
-    { eyebrow: 'LEADERSHIP · 2025—PRESENT', title: 'Vice President', body: 'North South University Debate Club. Tournament direction, team leadership, and competitive communication under pressure.' },
-    { eyebrow: 'EXECUTION', title: '30+ Initiatives', body: 'Planned and coordinated digital marketing and content initiatives across corporate and development-sector clients.' },
-    { eyebrow: 'COMMUNICATION', title: '250+ Client Interactions', body: 'Professional communication, structured follow-up, and meeting coordination at meaningful scale.' },
-  ];
-  return <group><RoomShell room="achievements" /><Plant position={[9.2, 0, -10.7]} /><FloorLamp position={[16.7, 0, -10.8]} />{[10.2, 13, 15.8].map((x, i) => <group key={x}><mesh position={[x, .55, -13.9]}><cylinderGeometry args={[.52, .66, 1.1, 20]} /><meshStandardMaterial color="#f4ead7" /></mesh><mesh position={[x, 1.2, -13.9]} rotation={[0, 0, i % 2 ? .2 : -.2]}><dodecahedronGeometry args={[.34]} /><meshStandardMaterial color="#d7a240" metalness={.35} roughness={.35} /></mesh></group>)}{items.map((item, index) => <FloatingDisplay key={item.title} position={[10.2 + index * 2.8, 2.4 + (index === 1 ? 0.5 : 0), -14.4]} item={item} color="#b77930" scale={.9} />)}</group>;
-}
-
-function ContactRoom() {
-  const items: WorldItem[] = [
-    { eyebrow: 'PROFESSIONAL NETWORK', title: 'LinkedIn', body: 'Connect for graduate, management trainee, supply-chain, planning, operations, and analytics opportunities.', link: 'https://www.linkedin.com/in/mahera-tasfee/', linkLabel: 'Open LinkedIn' },
-    { eyebrow: 'SOURCE ARCHIVE', title: 'GitHub', body: 'Explore all public projects, prototypes, simulations, and experiments.', link: 'https://github.com/Mah-era', linkLabel: 'Open GitHub' },
-    { eyebrow: 'LOCATION', title: 'Dhaka, Bangladesh', body: 'Available for graduate and management trainee opportunities in 2026.' },
-  ];
-  return <group><RoomShell room="contact" /><Sofa position={[0, 0, -22.1]} color="#6e9f91" /><Plant position={[3.8, 0, -22]} scale={1.15} /><FloorLamp position={[-3.9, 0, -22]} color="#fff0b4" />{items.map((item, index) => <FloatingDisplay key={item.title} position={[-2.9 + index * 2.9, 2.45 + (index === 1 ? 0.5 : 0), -25.4]} item={item} color="#33776d" scale={.9} />)}</group>;
-}
-
-function CameraController({ room }: { room: RoomId }) {
-  const keys = useRef<Record<string, boolean>>({});
-  const offset = useRef(new THREE.Vector3());
-  const lookAt = useMemo(() => new THREE.Vector3(), []);
-  useEffect(() => { offset.current.set(0, 0, 0); }, [room]);
+function CameraRig({
+  journey,
+  paused,
+  reducedMotion,
+  onReady,
+  resetView,
+  suppressClick,
+}: Pick<
+  WorldProps,
+  'journey' | 'paused' | 'reducedMotion' | 'onReady' | 'resetView'
+> & { suppressClick: RefObject<boolean> }) {
+  const { gl } = useThree();
+  const eased = useRef(0),
+    keys = useRef<Record<string, boolean>>({}),
+    offset = useRef(new THREE.Vector3());
+  const yaw = useRef(0),
+    pitch = useRef(0);
+  const input = useRef({
+    inside: false,
+    pressed: false,
+    x: 0,
+    y: 0,
+    lastX: 0,
+    lastY: 0,
+    distance: 0,
+    touch: false,
+  });
+  const pos = useMemo(() => new THREE.Vector3(), []),
+    target = useMemo(() => new THREE.Vector3(), []),
+    look = useMemo(() => new THREE.Vector3(0, 2, 0), []);
+  const q = useMemo(() => new THREE.Quaternion(), []),
+    m = useMemo(() => new THREE.Matrix4(), []),
+    up = useMemo(() => new THREE.Vector3(0, 1, 0), []),
+    zero = useMemo(() => new THREE.Vector3(), []);
+  const previous = useRef(0);
   useEffect(() => {
-    const down = (event: KeyboardEvent) => { keys.current[event.key.toLowerCase()] = true; };
-    const up = (event: KeyboardEvent) => { keys.current[event.key.toLowerCase()] = false; };
-    window.addEventListener('keydown', down); window.addEventListener('keyup', up);
-    return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); };
-  }, []);
-  useFrame((state, delta) => {
-    const speed = delta * 2.2;
-    if (keys.current.w || keys.current.arrowup) offset.current.z -= speed;
-    if (keys.current.s || keys.current.arrowdown) offset.current.z += speed;
-    if (keys.current.a || keys.current.arrowleft) offset.current.x -= speed;
-    if (keys.current.d || keys.current.arrowright) offset.current.x += speed;
-    offset.current.x = THREE.MathUtils.clamp(offset.current.x, -2.1, 2.1);
-    offset.current.z = THREE.MathUtils.clamp(offset.current.z, -1.7, 1.7);
-    const data = roomData[room];
-    const destination = new THREE.Vector3(...data.camera).add(offset.current);
-    state.camera.position.lerp(destination, 1 - Math.exp(-delta * 2.6));
-    lookAt.set(data.look[0] + state.pointer.x * 1.65, data.look[1] + state.pointer.y * 0.95, data.look[2]);
-    const direction = lookAt.clone().sub(state.camera.position).normalize();
-    const targetQuaternion = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(new THREE.Vector3(), direction, new THREE.Vector3(0, 1, 0)));
-    state.camera.quaternion.slerp(targetQuaternion, 1 - Math.exp(-delta * 3.8));
+    onReady();
+  }, [onReady]);
+  useEffect(() => {
+    yaw.current = 0;
+    pitch.current = 0;
+    input.current.inside = false;
+  }, [resetView]);
+  useEffect(() => {
+    const canvas = gl.domElement;
+    const move = (e: PointerEvent) => {
+      const rect = canvas.getBoundingClientRect(),
+        v = input.current;
+      v.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      v.y = 1 - ((e.clientY - rect.top) / rect.height) * 2;
+      v.inside = true;
+      if (v.pressed && !paused) {
+        const dx = e.clientX - v.lastX,
+          dy = e.clientY - v.lastY;
+        v.distance += Math.abs(dx) + Math.abs(dy);
+        if (v.distance > 5) {
+          suppressClick.current = true;
+          canvas.style.cursor = 'grabbing';
+        }
+        yaw.current -= dx * 0.004;
+        pitch.current = THREE.MathUtils.clamp(
+          pitch.current - dy * 0.0035,
+          -1.35,
+          1.35,
+        );
+      }
+      v.lastX = e.clientX;
+      v.lastY = e.clientY;
+    };
+    const down = (e: PointerEvent) => {
+      if (e.button !== 0 && e.pointerType !== 'touch') return;
+      Object.assign(input.current, {
+        pressed: true,
+        lastX: e.clientX,
+        lastY: e.clientY,
+        distance: 0,
+        touch: e.pointerType === 'touch',
+      });
+      suppressClick.current = false;
+    };
+    const release = () => {
+      input.current.pressed = false;
+      canvas.style.cursor = '';
+    };
+    const leave = () => {
+      input.current.inside = false;
+      release();
+    };
+    const keydown = (e: KeyboardEvent) => {
+      if (
+        (e.target as HTMLElement).closest(
+          'input,textarea,select,button,a,[role="dialog"]',
+        )
+      )
+        return;
+      keys.current[e.key.toLowerCase()] = true;
+    };
+    const keyup = (e: KeyboardEvent) => {
+      keys.current[e.key.toLowerCase()] = false;
+    };
+    const reset = () => {
+      keys.current = {};
+      input.current.inside = false;
+      release();
+    };
+    canvas.addEventListener('pointermove', move);
+    canvas.addEventListener('pointerdown', down);
+    canvas.addEventListener('pointerleave', leave);
+    canvas.addEventListener('pointercancel', reset);
+    window.addEventListener('pointerup', release);
+    window.addEventListener('keydown', keydown);
+    window.addEventListener('keyup', keyup);
+    window.addEventListener('blur', reset);
+    return () => {
+      canvas.removeEventListener('pointermove', move);
+      canvas.removeEventListener('pointerdown', down);
+      canvas.removeEventListener('pointerleave', leave);
+      canvas.removeEventListener('pointercancel', reset);
+      window.removeEventListener('pointerup', release);
+      window.removeEventListener('keydown', keydown);
+      window.removeEventListener('keyup', keyup);
+      window.removeEventListener('blur', reset);
+    };
+  }, [gl, paused, suppressClick]);
+  useFrame((state, rawDelta) => {
+    const dt = Math.min(rawDelta, 0.05),
+      wanted = journey.current;
+    eased.current = reducedMotion
+      ? wanted
+      : THREE.MathUtils.damp(eased.current, wanted, 5, dt);
+    const p = eased.current,
+      moving = Math.abs(previous.current - p) > 0.001;
+    previous.current = p;
+    if (moving || paused) offset.current.lerp(zero, 1 - Math.exp(-dt * 5));
+    if (moving) {
+      yaw.current = Math.atan2(Math.sin(yaw.current), Math.cos(yaw.current));
+      yaw.current = THREE.MathUtils.damp(yaw.current, 0, 6, dt);
+      pitch.current = THREE.MathUtils.damp(pitch.current, 0, 6, dt);
+    }
+    if (!paused && p > 0.97 && !moving) {
+      const v = input.current;
+      // Holding near an edge continues the turn; dragging gives direct, unlimited 360° control.
+      if (v.inside && !v.pressed && !v.touch && !reducedMotion) {
+        const edgeX = Math.max(0, (Math.abs(v.x) - 0.72) / 0.28);
+        const edgeY = Math.max(0, (Math.abs(v.y) - 0.8) / 0.2);
+        yaw.current -= Math.sign(v.x) * edgeX * 1.25 * dt;
+        pitch.current = THREE.MathUtils.clamp(
+          pitch.current + Math.sign(v.y) * edgeY * 0.85 * dt,
+          -1.35,
+          1.35,
+        );
+      }
+      const forward = (keys.current.w ? 1 : 0) - (keys.current.s ? 1 : 0),
+        side = (keys.current.d ? 1 : 0) - (keys.current.a ? 1 : 0);
+      offset.current.x +=
+        (-Math.sin(yaw.current) * forward + Math.cos(yaw.current) * side) *
+        dt *
+        1.4;
+      offset.current.z +=
+        (-Math.cos(yaw.current) * forward - Math.sin(yaw.current) * side) *
+        dt *
+        1.4;
+      offset.current.x = THREE.MathUtils.clamp(offset.current.x, -1.0, 1.0);
+      offset.current.z = THREE.MathUtils.clamp(offset.current.z, -1.7, 0.8);
+    }
+    if (p < 1) {
+      const t = THREE.MathUtils.smoothstep(p, 0, 1);
+      if (t < 0.6) {
+        const a = t / 0.6;
+        pos.set(12 * (1 - a), 9 - 6.8 * a, 21 - 10.5 * a);
+      } else {
+        const a = (t - 0.6) / 0.4;
+        pos.set(0, 2.2 - 0.35 * a, 10.5 - 5 * a);
+      }
+      target.set(0, 2.25 - 0.4 * t, -1);
+    } else {
+      const span = p - 1,
+        local = span - Math.floor(span),
+        sway = reducedMotion ? 0 : Math.sin(local * Math.PI * 2) * 0.32;
+      pos.set(sway, 1.85, 5.5 - span * 16).add(offset.current);
+      target.set(
+        pos.x - Math.sin(yaw.current) * 10 * Math.cos(pitch.current),
+        pos.y + Math.sin(pitch.current) * 10,
+        pos.z - Math.cos(yaw.current) * 10 * Math.cos(pitch.current),
+      );
+    }
+    state.camera.position.copy(pos);
+    look.lerp(target, 1 - Math.exp(-dt * 12));
+    m.lookAt(pos, look, up);
+    q.setFromRotationMatrix(m);
+    state.camera.quaternion.slerp(q, 1 - Math.exp(-dt * 12));
+    if (state.camera instanceof THREE.PerspectiveCamera) {
+      const fov = state.size.width < 700 ? (p < 1 ? 57 : 72) : p < 1 ? 43 : 65;
+      state.camera.fov = THREE.MathUtils.damp(state.camera.fov, fov, 5, dt);
+      state.camera.updateProjectionMatrix();
+    }
   });
   return null;
 }
-
-function World({ room, onEnter, onInspect }: { room: RoomId; onEnter: (room: RoomId) => void; onInspect: (item: WorldItem) => void }) {
+function Scene(props: WorldProps) {
+  const active = Math.max(0, props.chapter - 1);
+  const sunlightTarget = useMemo(() => new THREE.Object3D(), []);
+  const suppressClick = useRef(false);
   return (
-    <InspectContext.Provider value={onInspect}>
-      <color attach="background" args={['#cce5ed']} /><fog attach="fog" args={['#dcebf0', 18, 47]} />
-      <hemisphereLight intensity={1.35} color="#fff8e8" groundColor="#8f705f" /><ambientLight intensity={.65} /><directionalLight position={[8, 12, 9]} intensity={2.2} color="#fff1cc" castShadow shadow-mapSize={[1024, 1024]} />
-      <Sparkles count={115} scale={[42, 12, 48]} size={1.8} speed={.3} opacity={.34} color="#fff3c4" />
-      <Hub onEnter={onEnter} onInspect={onInspect} /><EducationRoom /><ExperienceRoom /><ProjectsRoom /><SkillsRoom /><AchievementRoom /><ContactRoom />
-      <Portal position={[-8, 1.7, -5]} rotation={[0, Math.PI / 2, 0]} room="skills" onEnter={onEnter} />
-      <Portal position={[8, 1.7, -5]} rotation={[0, -Math.PI / 2, 0]} room="achievements" onEnter={onEnter} />
-      <Portal position={[0, 1.7, -19.8]} room="contact" onEnter={onEnter} />
-      <ContactShadows position={[0, .01, 2]} opacity={.24} scale={35} blur={3} far={15} color="#644937" />
-      <CameraController room={room} />
-    </InspectContext.Provider>
+    <LookContext.Provider value={suppressClick}>
+      <color attach="background" args={['#ebe8df']} />
+      <fog attach="fog" args={['#ebe8df', 25, 62]} />
+      <ambientLight intensity={0.85} />
+      <hemisphereLight color="#fff8e5" groundColor="#8c7051" intensity={1.3} />
+      <primitive object={sunlightTarget} position={[0, 0, -active * 16]} />
+      <directionalLight
+        target={sunlightTarget}
+        position={[8, 15, 12 - active * 16]}
+        intensity={3}
+        color="#fff4d9"
+        castShadow
+        shadow-mapSize={[1024, 1024]}
+        shadow-camera-left={-16}
+        shadow-camera-right={16}
+        shadow-camera-top={16}
+        shadow-camera-bottom={-16}
+        shadow-normalBias={0.04}
+      />
+      {props.chapter < 2 && (
+        <Exterior journey={props.journey} reduced={props.reducedMotion} />
+      )}
+      {roomOrder.map(
+        (_, i) =>
+          Math.abs(i - active) <= 2 && (
+            <Room
+              key={i}
+              index={i}
+              reduced={props.reducedMotion || props.paused}
+              onInspect={props.onInspect}
+              onTravel={props.onTravel}
+            />
+          ),
+      )}
+      {!props.reducedMotion && (
+        <Sparkles
+          count={22}
+          scale={[13, 5, 22]}
+          position={[0, 2, -active * 16]}
+          size={1.3}
+          speed={0.16}
+          color="#fffdf3"
+          opacity={0.25}
+        />
+      )}
+      <CameraRig {...props} suppressClick={suppressClick} />
+    </LookContext.Provider>
   );
 }
-
-export function PortfolioWorld({ room, onEnter, onInspect }: { room: RoomId; onEnter: (room: RoomId) => void; onInspect: (item: WorldItem) => void }) {
+class WorldBoundary extends Component<
+  { children: ReactNode; onFallback: () => void },
+  { failed: boolean }
+> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch() {
+    this.props.onFallback();
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
+function WebGLFallback({ onFallback }: { onFallback: () => void }) {
+  useEffect(() => {
+    onFallback();
+  }, [onFallback]);
   return (
-    <Canvas shadows dpr={[1, 1.6]} camera={{ position: roomData.hub.camera, fov: 58, near: 0.1, far: 100 }} gl={{ antialias: true, powerPreference: 'high-performance' }} onPointerMissed={() => onInspect({ eyebrow: 'EXPLORE', title: roomData[room].label, body: roomData[room].subtitle })}>
-      <Suspense fallback={<Html center><div className="world-loading">Building the house…</div></Html>}><World room={room} onEnter={onEnter} onInspect={onInspect} /></Suspense>
-    </Canvas>
+    <div className="webgl-fallback">
+      Explore the portfolio through the room guide.
+    </div>
   );
 }
-
-export { projects };
+export function PortfolioWorld(props: WorldProps) {
+  return (
+    <WorldBoundary onFallback={props.onFallback}>
+      <Canvas
+        shadows
+        dpr={[1, 1.5]}
+        camera={{ position: [12, 9, 21], fov: 43, near: 0.08, far: 90 }}
+        gl={{ antialias: true, powerPreference: 'high-performance' }}
+        fallback={<WebGLFallback onFallback={props.onFallback} />}
+      >
+        <Suspense
+          fallback={
+            <Html center>
+              <div className="scene-loading">Opening the front door…</div>
+            </Html>
+          }
+        >
+          <Scene {...props} />
+        </Suspense>
+      </Canvas>
+    </WorldBoundary>
+  );
+}
