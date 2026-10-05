@@ -212,7 +212,7 @@ function DashboardScreen({ reduced }: { reduced: boolean }) {
       cursor.current.position.x = -0.88 + ((time.current * 0.08) % 0.55);
   });
   return (
-    <group position={[-3.9, 1.86, -1.176]}>
+    <group position={[-3.9, 1.86, -3.376]}>
       <mesh>
         <planeGeometry args={[2.15, 1.17]} />
         <meshBasicMaterial color="#293b38" />
@@ -244,13 +244,13 @@ function DashboardScreen({ reduced }: { reduced: boolean }) {
 }
 
 const bookPositions: V3[] = [
-  [-3.03, 0.88, 1.2],
-  [4.6, 0.88, 0.65],
-  [4.55, 1.22, -1.7],
-  [-4.1, 1.22, -0.9],
-  [-3, 1.23, -1.1],
-  [4.9, 0.88, 3.7],
-  [-2.7, 0.88, 1.6],
+  [-3.03, 0.88, -2.15],
+  [-3.7, 0.88, -0.45],
+  [4.55, 1.22, -5],
+  [-4.1, 1.22, -3.1],
+  [-3, 1.23, -3.3],
+  [-3.5, 0.88, -2.6],
+  [-2.7, 0.88, -2.05],
 ];
 export function LivingAtmosphere({
   reduced,
@@ -266,7 +266,7 @@ export function LivingAtmosphere({
       <RoomObjects index={index} reduced={reduced} />
       {index === 2 && <DashboardScreen reduced={reduced} />}
       {index === 5 && (
-        <group position={[4.8, 0, 3.7]}>
+        <group position={[-3.6, 0, -2.6]}>
           <mesh position={[0, 0.81, 0]}>
             <cylinderGeometry args={[0.75, 0.75, 0.12, 32]} />
             <meshStandardMaterial color="#b5a484" />
@@ -281,7 +281,7 @@ export function LivingAtmosphere({
       <Tea at={[at[0] - 0.54, at[1], at[2] + 0.08]} reduced={reduced} />
       {[2, 3, 4].includes(index) && (
         <DeskFan
-          at={index === 3 ? [4.5, 1.22, -1] : [-5.1, 1.23, -1]}
+          at={index === 3 ? [4.5, 1.22, -5.3] : [-5.1, 1.23, -3.2]}
           reduced={reduced}
         />
       )}

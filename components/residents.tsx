@@ -29,7 +29,7 @@ function Form({
       castShadow
       receiveShadow
     >
-      <sphereGeometry args={[1, 20, 14]} />
+      <sphereGeometry args={[1, 32, 24]} />
       <meshStandardMaterial color={color} roughness={0.88} />
     </mesh>
   );
@@ -75,8 +75,8 @@ function SoftProfile({
       const x = p.getX(i),
         y = p.getY(i),
         z = p.getZ(i);
-      const fold = Math.sin(Math.atan2(z, x) * 9 + y * 11) * 0.002;
-      p.setXYZ(i, x * (1 + fold), y, z * depth);
+      const fold = Math.sin(Math.atan2(z, x) * 9 + y * 11) * 0.025;
+      p.setXYZ(i, x * (1 + fold), y, z * depth * (1 + fold));
     }
     g.computeVertexNormals();
     return g;
@@ -90,11 +90,11 @@ function SoftProfile({
 }
 const shirtProfile: [number, number][] = [
   [0, 0.94],
-  [0.22, 0.95],
-  [0.232, 1.04],
-  [0.211, 1.18],
-  [0.233, 1.34],
-  [0.237, 1.39],
+  [0.197, 0.95],
+  [0.211, 1.04],
+  [0.185, 1.18],
+  [0.215, 1.34],
+  [0.214, 1.39],
   [0.18, 1.43],
   [0.074, 1.46],
   [0.063, 1.44],
@@ -120,8 +120,8 @@ const calfProfile: [number, number][] = [
 function HairLocks() {
   const locks = useMemo(
     () =>
-      Array.from({ length: 26 }, (_, i) => {
-        const a = (i / 26) * Math.PI * 1.62 + 0.56;
+      Array.from({ length: 48 }, (_, i) => {
+        const a = (i / 48) * Math.PI * 1.62 + 0.56;
         return new THREE.CatmullRomCurve3([
           new THREE.Vector3(
             Math.sin(a) * 0.06,
@@ -151,7 +151,7 @@ function HairLocks() {
     <group>
       {locks.map((curve, i) => (
         <mesh key={i} castShadow>
-          <tubeGeometry args={[curve, 18, 0.015 + (i % 3) * 0.002, 6, false]} />
+          <tubeGeometry args={[curve, 24, 0.008 + (i % 3) * 0.002, 8, false]} />
           <meshStandardMaterial
             color={i % 4 === 0 ? '#34332b' : hair}
             roughness={0.82}
@@ -174,30 +174,67 @@ function Mahera({
   const legs = useRef<(THREE.Group | null)[]>([]),
     arms = useRef<(THREE.Group | null)[]>([]),
     knees = useRef<(THREE.Group | null)[]>([]),
-    elbows = useRef<(THREE.Group | null)[]>([]);
+    elbows = useRef<(THREE.Group | null)[]>([]),
+    ankles = useRef<(THREE.Group | null)[]>([]),
+    eyes = useRef<(THREE.Group | null)[]>([]);
   const phase = useRef(0);
-  useFrame((_, dt) => {
+  useFrame(({ clock }, rawDt) => {
     if (reduced) return;
-    phase.current += dt * (speed.current > 0.03 ? 4.2 : 0.65);
+    const dt = Math.min(rawDt, 0.05);
+    // Distance-driven steps keep the gait in sync with acceleration and arrival.
+    phase.current += dt * speed.current * ((Math.PI * 2) / 0.72);
     const walk = Math.min(1, speed.current / 0.38),
-      t = phase.current;
+      t = phase.current,
+      idle = clock.elapsedTime;
     if (torso.current) {
-      torso.current.position.y = Math.abs(Math.sin(t)) * walk * 0.018;
-      torso.current.rotation.z = Math.sin(t) * walk * 0.016;
+      torso.current.position.y = (1 - Math.cos(t * 2)) * walk * 0.006;
+      torso.current.rotation.z = Math.sin(t) * walk * 0.022;
+      torso.current.rotation.y = Math.sin(t) * walk * 0.035;
+      torso.current.scale.y = 1 + Math.sin(idle * 1.7) * 0.002;
     }
     if (head.current) {
-      head.current.rotation.y = Math.sin(t * 0.23) * 0.15;
-      head.current.rotation.z = Math.sin(t * 0.14) * 0.025;
+      head.current.rotation.y = Math.sin(idle * 0.43) * 0.16;
+      head.current.rotation.z = Math.sin(idle * 0.31) * 0.025;
+      head.current.rotation.x = Math.sin(idle * 0.6) * 0.025;
     }
+    const blink = idle % 4.7;
+    eyes.current.forEach((eye) => {
+      if (eye)
+        eye.scale.y =
+          blink < 0.17 ? Math.max(0.08, Math.abs(blink - 0.085) / 0.085) : 1;
+    });
     legs.current.forEach((leg, i) => {
-      if (leg) {
-        const stride = Math.sin(t + i * Math.PI);
-        leg.rotation.x = -stride * 0.3 * walk;
-        leg.rotation.z = Math.sin(t + i * Math.PI) * 0.018 * walk;
-      }
+      const cycle = (t / (Math.PI * 2) + i * 0.5) % 1;
+      const swing = Math.max(0, (cycle - 0.6) / 0.4);
+      const forward =
+        (cycle < 0.6 ? 1 - cycle / 0.3 : -Math.cos(swing * Math.PI)) *
+        0.18 *
+        walk;
+      const lift = Math.sin(swing * Math.PI) * 0.07 * walk;
+      const vertical = 0.846 - lift;
+      const reach = Math.min(0.859, Math.hypot(vertical, forward));
+      const knee =
+        Math.PI -
+        Math.acos(
+          THREE.MathUtils.clamp(
+            (0.43 ** 2 * 2 - reach ** 2) / (2 * 0.43 ** 2),
+            -1,
+            1,
+          ),
+        );
+      const hip = Math.atan2(-forward, vertical) - knee / 2;
+      if (leg)
+        leg.rotation.x = THREE.MathUtils.damp(leg.rotation.x, hip, 18, dt);
       if (knees.current[i])
-        knees.current[i]!.rotation.x =
-          Math.max(0, -Math.sin(t + i * Math.PI)) * 0.6 * walk;
+        knees.current[i]!.rotation.x = THREE.MathUtils.damp(
+          knees.current[i]!.rotation.x,
+          knee,
+          18,
+          dt,
+        );
+      if (ankles.current[i])
+        ankles.current[i]!.rotation.x =
+          -hip - knee + Math.sin(swing * Math.PI * 2) * 0.12 * walk;
       if (elbows.current[i])
         elbows.current[i]!.rotation.x =
           -0.15 - Math.max(0, Math.sin(t + i * Math.PI)) * 0.12 * walk;
@@ -205,7 +242,8 @@ function Mahera({
     arms.current.forEach((arm, i) => {
       if (arm)
         arm.rotation.x =
-          Math.sin(t + i * Math.PI) * 0.21 * walk + Math.sin(t * 0.3) * 0.04;
+          Math.sin(t + i * Math.PI) * 0.24 * walk +
+          Math.sin(idle * 0.7 + i) * 0.025;
     });
   });
   return (
@@ -213,6 +251,14 @@ function Mahera({
       <group ref={torso}>
         {/* Adult proportions and a simple charcoal outfit, informed by the supplied photo. */}
         <SoftProfile rings={shirtProfile} color={linen} depth={0.66} />
+        <mesh
+          position={[0, 1.452, 0]}
+          rotation={[Math.PI / 2, 0, 0]}
+          scale={[1, 0.72, 1]}
+        >
+          <torusGeometry args={[0.07, 0.008, 8, 40]} />
+          <meshStandardMaterial color="#41433c" roughness={0.96} />
+        </mesh>
         <Limb at={[0, 1.48, 0]} length={0.16} radius={0.063} color={skin} />
         <group ref={head} position={[0, 1.66, 0]}>
           <Form scale={[0.13, 0.18, 0.125]} color={skin} />
@@ -257,21 +303,28 @@ function Mahera({
                   roughness={0.35}
                 />
               </mesh>
-              <Form
-                at={[side * 0.05, 0.005, 0.112]}
-                scale={[0.026, 0.014, 0.011]}
-                color="#322820"
-              />
-              <Form
-                at={[side * 0.048, 0.006, 0.121]}
-                scale={[0.009, 0.01, 0.006]}
-                color="#151914"
-              />
-              <Form
-                at={[side * 0.045 + 0.003, 0.01, 0.125]}
-                scale={[0.003, 0.003, 0.002]}
-                color="#f7ead5"
-              />
+              <group
+                position={[side * 0.05, 0.005, 0.112]}
+                ref={(el) => {
+                  eyes.current[side < 0 ? 0 : 1] = el;
+                }}
+              >
+                <Form
+                  at={[0, 0, 0]}
+                  scale={[0.026, 0.014, 0.011]}
+                  color="#322820"
+                />
+                <Form
+                  at={[-side * 0.002, 0.001, 0.009]}
+                  scale={[0.009, 0.01, 0.006]}
+                  color="#151914"
+                />
+                <Form
+                  at={[-side * 0.005 + 0.003, 0.005, 0.013]}
+                  scale={[0.003, 0.003, 0.002]}
+                  color="#f7ead5"
+                />
+              </group>
               <Form
                 at={[side * 0.05, 0.035, 0.112]}
                 scale={[0.033, 0.007, 0.009]}
@@ -320,12 +373,12 @@ function Mahera({
             ref={(el) => {
               arms.current[i] = el;
             }}
-            position={[side * 0.23, 1.38, 0]}
+            position={[side * 0.211, 1.38, 0]}
             rotation={[0, 0, side * 0.1]}
           >
             <Form
               at={[side * 0.015, -0.115, 0]}
-              scale={[0.105, 0.17, 0.103]}
+              scale={[0.083, 0.157, 0.084]}
               color={linen}
             />
             <Limb
@@ -396,16 +449,32 @@ function Mahera({
             position={[0, -0.43, 0]}
           >
             <SoftProfile rings={calfProfile} color={trouser} depth={0.93} />
-            <Form
-              at={[0, -0.433, 0.057]}
-              scale={[0.083, 0.052, 0.138]}
-              color="#a28c70"
-            />
-            <Form
-              at={[0, -0.469, 0.054]}
-              scale={[0.084, 0.014, 0.14]}
-              color="#d2c4a7"
-            />
+            <group
+              position={[0, -0.43, 0]}
+              ref={(el) => {
+                ankles.current[i] = el;
+              }}
+            >
+              <Form
+                at={[0, -0.003, 0.057]}
+                scale={[0.083, 0.052, 0.138]}
+                color="#a28c70"
+              />
+              <Form
+                at={[0, -0.039, 0.054]}
+                scale={[0.084, 0.014, 0.14]}
+                color="#d2c4a7"
+              />
+              {[0, 1, 2, 3].map((lace) => (
+                <Form
+                  key={lace}
+                  at={[0, 0.038 - lace * 0.003, 0.025 + lace * 0.024]}
+                  scale={[0.049, 0.004, 0.004]}
+                  color="#e8ddc8"
+                  rotation={[0, lace % 2 ? 0.12 : -0.12, 0]}
+                />
+              ))}
+            </group>
           </group>
         </group>
       ))}
@@ -445,6 +514,7 @@ function Walker({
     if (i === last.current) i = (i + 2) % stops.length;
     last.current = i;
     goal.current.set(...stops[i]);
+    if (kind === 'person') goal.current.x *= 0.82;
     if (kind === 'cat') {
       goal.current.x *= 0.8;
       goal.current.z += 0.5;
@@ -492,7 +562,9 @@ function Walker({
     );
     speed.current = THREE.MathUtils.damp(
       speed.current,
-      (kind === 'person' ? 0.4 : 0.55) * Math.max(0.08, Math.cos(delta)),
+      (kind === 'person'
+        ? 0.4 * Math.min(1, direction.length() / 0.65)
+        : 0.55) * Math.max(0.08, Math.cos(delta)),
       3,
       dt,
     );

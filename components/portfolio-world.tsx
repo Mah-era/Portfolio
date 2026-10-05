@@ -902,8 +902,8 @@ function Room({
       {room === 'hub' && (
         <>
           <Sofa at={[-4, 0.0, -1]} rotation={[0, 0.38, 0]} />
-          <Table at={[-3.6, 0, 1.15]} round />
-          <Flowers at={[-3.6, 0.89, 1.15]} />
+          <Table at={[-3.6, 0, -2.2]} round />
+          <Flowers at={[-3.6, 0.89, -2.2]} />
           <Lamp at={[-5.7, 0, -3]} />
 
           <Shelf at={[6.6, 0, -3.8]} rotation={[0, -Math.PI / 2, 0]} />
@@ -914,35 +914,35 @@ function Room({
         <>
           <Shelf at={[-6.6, 0, -3.8]} rotation={[0, Math.PI / 2, 0]} />
           <Shelf at={[6.6, 0, -3.8]} rotation={[0, -Math.PI / 2, 0]} />
-          <Sofa at={[-4.5, 0, 0.6]} color="#998775" rotation={[0, 0.7, 0]} />
+          <Sofa at={[-4.5, 0, -2.8]} color="#998775" rotation={[0, 0.7, 0]} />
           <Lamp at={[-5.8, 0, -2]} />
-          <Table at={[4.5, 0, 0.2]} round />
-          <Books at={[3.9, 0.87, 0.2]} count={4} />
+          <Table at={[-3.8, 0, -0.9]} round />
+          <Books at={[-4.4, 0.87, -0.9]} count={4} />
         </>
       )}
       {room === 'experience' && (
         <>
-          <Table at={[-3.9, 0, -1]} />
-          <Table at={[4, 0, -2]} />
+          <Table at={[-3.9, 0, -3.2]} />
+          <Table at={[4, 0, -5.3]} />
           <Block
-            at={[-3.9, 1.9, -1.3]}
+            at={[-3.9, 1.9, -3.5]}
             size={[2.4, 1.45, 0.15]}
             color={blue}
             round={0.1}
           />
           <Block
-            at={[-3.9, 1.86, -1.2]}
+            at={[-3.9, 1.86, -3.4]}
             size={[2.16, 1.18, 0.03]}
             color="#bfc7c3"
           />
-          <Books at={[2.5, 1.22, -2]} count={6} />
-          <Lamp at={[-5.9, 0, 2.5]} color="#c0b59e" />
+          <Books at={[2.5, 1.22, -5.3]} count={6} />
+          <Lamp at={[-5.9, 0, -4.8]} color="#c0b59e" />
         </>
       )}
       {room === 'projects' && (
         <>
-          <Table at={[-4.4, 0, -1]} />
-          <Table at={[4.4, 0, -1]} />
+          <Table at={[-4.4, 0, -3.2]} />
+          <Table at={[4.4, 0, -5.3]} />
           <Mobile at={[0, 5.5, -2]} reduced={reduced} />
 
           <Lamp at={[5.8, 0, -6]} color="#c2c7c3" />
@@ -958,8 +958,8 @@ function Room({
       )}
       {room === 'skills' && (
         <>
-          <Table at={[-4, 0, -1.1]} />
-          <Flowers at={[-4, 1.23, -1.1]} />
+          <Table at={[-4, 0, -3.3]} />
+          <Flowers at={[-4, 1.23, -3.3]} />
 
           <Shelf at={[-6.6, 0, -3.8]} rotation={[0, Math.PI / 2, 0]} />
           <mesh position={[0, 5.975, 0]} rotation={[Math.PI / 2, 0, 0]}>
@@ -993,18 +993,18 @@ function Room({
           {[-4.6, 4.6].map((x, i) => (
             <group key={x}>
               <Cylinder
-                at={[x, 0.7, -1]}
+                at={[x, 0.7, -5.4]}
                 radius={0.68}
                 height={1.4}
                 color={cream}
               />
               <Cylinder
-                at={[x, 1.48, -1]}
+                at={[x, 1.48, -5.4]}
                 radius={0.4}
                 height={0.16}
                 color="#998464"
               />
-              <mesh position={[x, 2, -1]} rotation={[0, 0.4, 0.1]}>
+              <mesh position={[x, 2, -5.4]} rotation={[0, 0.4, 0.1]}>
                 <torusKnotGeometry args={[0.3, 0.095, 64, 10]} />
                 <meshStandardMaterial
                   color={i ? '#b6a17a' : '#60685f'}
@@ -1015,15 +1015,15 @@ function Room({
             </group>
           ))}
 
-          <Lamp at={[-5.8, 0, 3.5]} />
+          <Lamp at={[-5.8, 0, -3.2]} />
         </>
       )}
       {room === 'contact' && (
         <>
-          <Sofa at={[-4.4, 0, -0.8]} rotation={[0, 0.5, 0]} color="#b4ada0" />
-          <Sofa at={[4.4, 0, -0.8]} rotation={[0, -0.5, 0]} color="#b4ada0" />
-          <Table at={[-3.3, 0, 1.65]} round />
-          <Flowers at={[-3.3, 0.87, 1.65]} color="#ddd2b9" />
+          <Sofa at={[-4.4, 0, -4.2]} rotation={[0, 0.5, 0]} color="#b4ada0" />
+          <Sofa at={[4.4, 0, -5.3]} rotation={[0, -0.5, 0]} color="#b4ada0" />
+          <Table at={[-3.3, 0, -2]} round />
+          <Flowers at={[-3.3, 0.87, -2]} color="#ddd2b9" />
           <Lamp at={[-5.8, 0, -4]} color="#c9bca2" />
         </>
       )}

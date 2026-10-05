@@ -380,7 +380,7 @@ export function RoomObjects({
   reduced: boolean;
 }) {
   return (
-    <group position={[-4.9, 0, 3.6]} rotation={[0, 0.25, 0]}>
+    <group position={[3.8, 0, -2.8]} rotation={[0, -0.18, 0]}>
       {/* A low side console keeps the route and all portfolio exhibits clear. */}
       <Box at={[0, 1, 0]} size={[2.65, 0.08, 1.16]} color="#a99473" />
       {[-1.06, 1.06].map((x) => (
