@@ -24,6 +24,12 @@ import {
   Play,
   Plus,
   RotateCcw,
+  Sun,
+  Moon,
+  MoveUpRight,
+  Layers3,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import {
   Sheet,
@@ -66,6 +72,10 @@ export default function Home() {
   const [collection, setCollection] = useState<RoomId | null>(null),
     [resetView, setResetView] = useState(0);
   const [visited, setVisited] = useState<number[]>([]);
+  const [night, setNight] = useState(false);
+  const [clearView, setClearView] = useState(false);
+  const [mobile, setMobile] = useState(false);
+  const pendingTravel = useRef<number | null>(null);
   const current = roomOrder[Math.max(0, chapter - 1)],
     data = roomData[current];
   const storyRoom = collection ?? current,
@@ -76,9 +86,17 @@ export default function Home() {
   const handleFallback = useCallback(() => {
     setFallback(true);
     setReady(true);
-    setStories(true);
   }, []);
 
+  useEffect(() => {
+    const media = window.matchMedia(
+      '(max-width: 800px), (max-height: 500px) and (pointer: coarse)',
+    );
+    const change = () => setMobile(media.matches);
+    change();
+    media.addEventListener('change', change);
+    return () => media.removeEventListener('change', change);
+  }, []);
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     const change = () => setReduced(media.matches);
@@ -113,13 +131,8 @@ export default function Home() {
       window.removeEventListener('resize', scroll);
     };
   }, []);
-  const travel = useCallback(
+  const scrollToRoom = useCallback(
     (next: number) => {
-      setGuide(false);
-      setStories(false);
-      setSelected(null);
-      setCollection(null);
-      setResetView((v) => v + 1);
       const total = document.documentElement.scrollHeight - window.innerHeight;
       window.scrollTo({
         top: (Math.max(0, Math.min(7, next)) / 7) * total,
@@ -127,6 +140,31 @@ export default function Home() {
       });
     },
     [quiet],
+  );
+  const finishModalTravel = useCallback(
+    (open: boolean) => {
+      if (open || pendingTravel.current === null) return;
+      const next = pendingTravel.current;
+      pendingTravel.current = null;
+      // Let the dialog finish restoring scroll position before starting the tour.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => scrollToRoom(next));
+      });
+    },
+    [scrollToRoom],
+  );
+  const travel = useCallback(
+    (next: number) => {
+      const modalOpen = guide || stories || Boolean(selected);
+      if (modalOpen) pendingTravel.current = next;
+      setGuide(false);
+      setStories(false);
+      setSelected(null);
+      setCollection(null);
+      setResetView((v) => v + 1);
+      if (!modalOpen) scrollToRoom(next);
+    },
+    [guide, stories, selected, scrollToRoom],
   );
   const inspect = useCallback((item: WorldItem) => {
     setStories(false);
@@ -142,7 +180,7 @@ export default function Home() {
 
   return (
     <main
-      className={`home-experience ${intro ? 'at-door' : 'inside-home'} ${quiet ? 'quiet-mode' : ''}`}
+      className={`home-experience ${intro ? 'at-door' : 'inside-home'} ${quiet ? 'quiet-mode' : ''} ${night ? 'after-hours' : ''} ${clearView && !intro ? 'clear-view' : ''}`}
       style={
         {
           '--accent': data.accent,
@@ -166,6 +204,8 @@ export default function Home() {
               onTravel={travel}
               onReady={handleReady}
               onFallback={handleFallback}
+              night={night}
+              compact={mobile}
             />
           </Suspense>
         </div>
@@ -177,8 +217,12 @@ export default function Home() {
             onClick={() => travel(0)}
             aria-label="Mahera Tasfee, return to entrance"
           >
-            <span className="monogram">MT</span>
-            <span>MAHERA TASFEE</span>
+            <span className="monogram">
+              m<span>t</span>
+            </span>
+            <span>
+              MAHERA TASFEE<small>A MIND FOR WHAT’S NEXT</small>
+            </span>
           </button>
           <nav className="header-nav" aria-label="Portfolio shortcuts">
             <button type="button" onClick={() => travel(1)}>
@@ -192,7 +236,7 @@ export default function Home() {
               onClick={() => setGuide(true)}
               className="guide-button"
             >
-              <Compass size={17} /> Explore rooms
+              <Compass size={17} /> The floor plan
             </button>
           </nav>
           <a
@@ -201,21 +245,30 @@ export default function Home() {
             target="_blank"
             rel="noreferrer"
           >
-            Let’s talk <ArrowUpRight size={17} />
+            Let’s connect <ArrowUpRight size={17} />
           </a>
         </header>
 
         {intro ? (
           <section className="arrival-copy">
-            <div className="eyebrow">PORTFOLIO / 2026</div>
+            <div className="eyebrow">
+              <span className="live-dot" /> WELCOME TO MY WORLD{' '}
+              <span className="edition">VOL. 01 / 2026</span>
+            </div>
             <h1>
               Mahera
               <br />
-              <em>Tasfee.</em>
+              <em>
+                Tasfee<span className="title-period">.</span>
+              </em>
             </h1>
+            <h2>
+              A business mind.
+              <br /> A builder’s instinct.
+            </h2>
             <p>
-              Connecting business, data, and practical systems through
-              thoughtful execution.
+              I connect the dots between people, data, and operations — and turn
+              that thinking into things that work.
             </p>
             <div className="hero-tags">
               <span>Supply chain</span>
@@ -229,8 +282,10 @@ export default function Home() {
               className="primary-button"
               onClick={() => travel(1)}
             >
-              <span>Enter the residence</span>
-              <ArrowRight size={21} />
+              <span>Step inside my world</span>
+              <span className="button-arrow">
+                <ArrowRight size={21} />
+              </span>
             </button>
             <button
               type="button"
@@ -240,8 +295,14 @@ export default function Home() {
                 setStories(true);
               }}
             >
-              View the project collection <ArrowUpRight size={16} />
+              Or, go straight to my work <ArrowUpRight size={16} />
             </button>
+            <div className="intro-footnote">
+              <span>BASED IN DHAKA, BANGLADESH</span>
+              <span>
+                OPEN TO OPPORTUNITIES <i />
+              </span>
+            </div>
           </section>
         ) : (
           <section className="chapter-copy" key={current}>
@@ -280,18 +341,68 @@ export default function Home() {
           </section>
         )}
 
+        <div className="scene-topline">
+          <span>
+            <i /> {intro ? 'THE RESIDENCE' : data.label.toUpperCase()}
+          </span>
+          <button
+            type="button"
+            onClick={() => setNight(!night)}
+            aria-label={night ? 'Switch to daylight' : 'Switch to evening'}
+          >
+            {night ? <Moon size={14} /> : <Sun size={14} />}
+            {night ? 'AFTER HOURS' : 'GOLDEN HOUR'}
+          </button>
+        </div>
+        {intro && (
+          <button
+            className="explore-seal"
+            type="button"
+            onClick={() => travel(1)}
+            aria-label="Begin the seven-room journey"
+          >
+            <svg viewBox="0 0 100 100" aria-hidden="true">
+              <defs>
+                <path
+                  id="seal-path"
+                  d="M50,50 m-36,0 a36,36 0 1,1 72,0 a36,36 0 1,1 -72,0"
+                />
+              </defs>
+              <text>
+                <textPath href="#seal-path">
+                  SCROLL TO EXPLORE · A WORLD OF IDEAS ·{' '}
+                </textPath>
+              </text>
+            </svg>
+            <ArrowDown size={25} />
+          </button>
+        )}
         {intro && (
           <div className="architecture-caption">
-            <span>THE RESIDENCE</span>
+            <span>AN EXPLORATION IN SEVEN CHAPTERS</span>
             <p>
-              Seven spaces.
-              <br />A professional perspective.
+              Every room,
+              <br />
+              <em>a different perspective.</em>
             </p>
+            <button
+              type="button"
+              onClick={() => travel(1)}
+              aria-label="Enter the residence"
+            >
+              <MoveUpRight size={23} />
+            </button>
           </div>
         )}
+        <div className="scene-coordinate" aria-hidden="true">
+          {intro
+            ? '23.81° N / 90.41° E'
+            : `CHAPTER ${String(chapter).padStart(2, '0')} / 07`}
+          <span>{night ? 'EVENING STUDY' : 'LIGHT & PERSPECTIVE'}</span>
+        </div>
         {!intro && (
           <div className="room-sign">
-            <span>YOU’RE WELCOME IN</span>
+            <span>THE COLLECTION</span>
             <strong>{data.label}</strong>
             <div>
               <span />
@@ -305,8 +416,10 @@ export default function Home() {
             : fallback
               ? 'Explore the portfolio through the room guide.'
               : intro
-                ? 'Scroll to enter. Explore at your own pace.'
-                : 'Drag to look 360° · move toward an edge to turn · click to inspect'}
+                ? 'A scroll becomes a journey.'
+                : mobile
+                  ? 'Swipe sideways to look · swipe up to walk'
+                  : 'Drag to look around · scroll to walk · select an exhibit'}
         </div>
 
         <footer className="journey-footer">
@@ -322,7 +435,7 @@ export default function Home() {
                   : 'SCROLL TO CONTINUE'}
               <small>
                 {intro
-                  ? 'An interactive portfolio'
+                  ? 'Take a little look around'
                   : `${visited.length} of 7 rooms explored`}
               </small>
             </span>
@@ -343,6 +456,34 @@ export default function Home() {
             ))}
           </nav>
           <div className="footer-controls">
+            {!intro && (
+              <button
+                type="button"
+                className="step-button mobile-previous"
+                onClick={() => travel(chapter - 1)}
+                aria-label={
+                  chapter === 1 ? 'Return to entrance' : 'Go to previous room'
+                }
+              >
+                <ArrowLeft size={20} />
+              </button>
+            )}
+            {!intro && (
+              <button
+                type="button"
+                className="motion-button"
+                onClick={() => setClearView(!clearView)}
+                aria-pressed={clearView}
+                aria-label={
+                  clearView
+                    ? 'Show portfolio labels'
+                    : 'Hide labels for an unobstructed view'
+                }
+              >
+                {clearView ? <Eye size={16} /> : <EyeOff size={16} />}
+                <span>{clearView ? 'Show labels' : 'Clear view'}</span>
+              </button>
+            )}
             {!intro && (
               <button
                 type="button"
@@ -388,34 +529,89 @@ export default function Home() {
         </footer>
       </div>
 
-      <Dialog open={guide} onOpenChange={setGuide}>
+      <Dialog
+        open={guide}
+        onOpenChange={setGuide}
+        onOpenChangeComplete={finishModalTravel}
+      >
         <DialogContent className="home-guide">
-          <DialogTitle>Explore the residence.</DialogTitle>
+          <div className="eyebrow">YOUR VISIT, YOUR PACE</div>
+          <DialogTitle>
+            A place for every
+            <br />
+            <em>part of the story.</em>
+          </DialogTitle>
           <DialogDescription>
             Move directly to a room, or follow the full walkthrough.
           </DialogDescription>
-          <div className="guide-rooms">
-            {roomOrder.map((id, i) => (
-              <button
-                type="button"
-                key={id}
-                onClick={() => travel(i + 1)}
-                style={{ '--tile': roomData[id].color } as CSSProperties}
+          <div className="guide-layout">
+            <div className="floorplan">
+              <div className="floorplan-north">N ↑</div>
+              <svg
+                viewBox="0 0 360 510"
+                role="img"
+                aria-label="Interactive floor plan of seven portfolio rooms"
               >
-                <span className="guide-number">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <div>
-                  <strong>{roomData[id].label}</strong>
-                  <span>{roomData[id].category}</span>
-                </div>
-                {visited.includes(i + 1) ? (
-                  <Check size={19} />
-                ) : (
-                  <ArrowUpRight size={19} />
-                )}
-              </button>
-            ))}
+                <path d="M180 475V44" className="plan-path" />
+                {roomOrder.map((id, i) => {
+                  const x = i % 2 ? 183 : 43;
+                  const y = 37 + Math.floor(i / 2) * 111;
+                  return (
+                    <g
+                      key={id}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Enter ${roomData[id].label}`}
+                      onClick={() => travel(i + 1)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          travel(i + 1);
+                        }
+                      }}
+                      className={chapter === i + 1 ? 'current' : ''}
+                    >
+                      <rect x={x} y={y} width="131" height="99" rx="2" />
+                      <path d={`M${x + 12} ${y + 12}h107v75h-107z`} />
+                      <text x={x + 18} y={y + 35} className="plan-number">
+                        0{i + 1}
+                      </text>
+                      <text x={x + 18} y={y + 76}>
+                        {roomData[id].category}
+                      </text>
+                    </g>
+                  );
+                })}
+                <text x="214" y="418" className="plan-entry">
+                  THE ENTRANCE
+                </text>
+                <path d="M181 487l-6-12h12z" className="plan-arrow" />
+              </svg>
+              <span>SEVEN ROOMS. ONE CURIOUS MIND.</span>
+            </div>
+            <div className="guide-rooms">
+              {roomOrder.map((id, i) => (
+                <button
+                  type="button"
+                  key={id}
+                  onClick={() => travel(i + 1)}
+                  style={{ '--tile': roomData[id].color } as CSSProperties}
+                >
+                  <span className="guide-number">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <div>
+                    <strong>{roomData[id].label}</strong>
+                    <span>{roomData[id].category}</span>
+                  </div>
+                  {visited.includes(i + 1) ? (
+                    <Check size={19} />
+                  ) : (
+                    <ArrowUpRight size={19} />
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
           <button
             type="button"
@@ -427,10 +623,15 @@ export default function Home() {
         </DialogContent>
       </Dialog>
 
-      <Sheet open={stories} onOpenChange={setStories}>
+      <Sheet
+        open={stories}
+        onOpenChange={setStories}
+        onOpenChangeComplete={finishModalTravel}
+      >
         <SheetContent className="story-sheet">
           <div className="sheet-heading">
             <span className="eyebrow">
+              <Layers3 size={15} />
               {String(roomOrder.indexOf(storyRoom) + 1).padStart(2, '0')} ·{' '}
               {storyData.category}
             </span>
@@ -441,7 +642,9 @@ export default function Home() {
                 : storyData.subtitle}
             </SheetDescription>
           </div>
-          <div className="story-collection">
+          <div
+            className={`story-collection ${storyRoom === 'projects' ? 'project-collection' : ''}`}
+          >
             {roomItems[storyRoom].map((item, i) => (
               <button
                 type="button"
@@ -460,8 +663,11 @@ export default function Home() {
                   />
                 ) : storyRoom === 'projects' ? (
                   <div className="media-placeholder">
-                    <BookOpen size={28} />
-                    <span>Project preview to come</span>
+                    <span className="placeholder-index">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <MoveUpRight size={30} />
+                    <span>SCREENSHOTS & FILM COMING SOON</span>
                   </div>
                 ) : null}
                 <div className="story-item-copy">
@@ -483,6 +689,7 @@ export default function Home() {
 
       <Dialog
         open={Boolean(selected)}
+        onOpenChangeComplete={finishModalTravel}
         onOpenChange={(open) => {
           if (!open) setSelected(null);
         }}

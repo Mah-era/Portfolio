@@ -1,0 +1,656 @@
+[
+  {
+    "section": "Entrance and shared navigation"
+  },
+  {
+    "position": "Header / monogram and identity",
+    "text": "mt\nMAHERA TASFEE\nA MIND FOR WHAT’S NEXT"
+  },
+  {
+    "position": "Header / navigation buttons",
+    "text": "Profile\nProjects 15\nThe floor plan"
+  },
+  {
+    "position": "Header / contact link",
+    "text": "Let’s connect"
+  },
+  {
+    "position": "Entrance / eyebrow and edition",
+    "text": "WELCOME TO MY WORLD\nVOL. 01 / 2026"
+  },
+  {
+    "position": "Entrance / main heading",
+    "text": "Mahera\nTasfee."
+  },
+  {
+    "position": "Entrance / subheading",
+    "text": "A business mind.\nA builder’s instinct."
+  },
+  {
+    "position": "Entrance / introduction",
+    "text": "I connect the dots between people, data, and operations — and turn that thinking into things that work."
+  },
+  {
+    "position": "Entrance / subject tags",
+    "text": "Supply chain / Operations / Analytics"
+  },
+  {
+    "position": "Entrance / primary button",
+    "text": "Step inside my world"
+  },
+  {
+    "position": "Entrance / secondary button",
+    "text": "Or, go straight to my work"
+  },
+  {
+    "position": "Entrance / location and availability footnote",
+    "text": "BASED IN DHAKA, BANGLADESH\nOPEN TO OPPORTUNITIES"
+  },
+  {
+    "position": "Entrance / scene label",
+    "text": "THE RESIDENCE"
+  },
+  {
+    "position": "Entrance / rotating seal",
+    "text": "SCROLL TO EXPLORE · A WORLD OF IDEAS ·"
+  },
+  {
+    "position": "Entrance / architecture caption",
+    "text": "AN EXPLORATION IN SEVEN CHAPTERS\nEvery room,\na different perspective."
+  },
+  {
+    "position": "Entrance / scroll invitation",
+    "text": "SCROLL TO ENTER\nTake a little look around"
+  },
+  {
+    "section": "Shared room interface and display states"
+  },
+  {
+    "position": "Scene / day and night button states",
+    "text": "GOLDEN HOUR\nAFTER HOURS"
+  },
+  {
+    "position": "Scene / coordinates and caption states currently hidden by styling",
+    "text": "23.81° N / 90.41° E\nCHAPTER 01 / 07\nCHAPTER 02 / 07\nCHAPTER 03 / 07\nCHAPTER 04 / 07\nCHAPTER 05 / 07\nCHAPTER 06 / 07\nCHAPTER 07 / 07\nEVENING STUDY\nLIGHT & PERSPECTIVE"
+  },
+  {
+    "position": "Scene / loading and fallback messages",
+    "text": "Preparing the residence…\nOpening the front door…\nExplore the portfolio through the room guide."
+  },
+  {
+    "position": "Scene / entrance and interior instructions",
+    "text": "A scroll becomes a journey.\nDrag to look around · scroll to walk · select an exhibit"
+  },
+  {
+    "position": "Room / collection label",
+    "text": "THE COLLECTION"
+  },
+  {
+    "position": "Room / discover button states",
+    "text": "Discover this room\nExplore all 15 projects"
+  },
+  {
+    "position": "Footer / room journey labels",
+    "text": "SCROLL TO CONTINUE\nTHE LOUNGE"
+  },
+  {
+    "position": "Footer / visited room counter states",
+    "text": "1 of 7 rooms explored\n2 of 7 rooms explored\n3 of 7 rooms explored\n4 of 7 rooms explored\n5 of 7 rooms explored\n6 of 7 rooms explored\n7 of 7 rooms explored"
+  },
+  {
+    "position": "Footer / visibility controls",
+    "text": "Clear view\nShow labels"
+  },
+  {
+    "position": "Footer / camera control",
+    "text": "Reset view"
+  },
+  {
+    "position": "Footer / motion control states",
+    "text": "Motion\nStill"
+  },
+  {
+    "section": "Room introductions and navigation labels"
+  },
+  {
+    "position": "Room 01 / The Reception / name and category in navigation and room sign",
+    "text": "The Reception\nProfile"
+  },
+  {
+    "position": "Room 01 / The Reception / chapter eyebrow",
+    "text": "01 / 07\nProfile"
+  },
+  {
+    "position": "Room 01 / The Reception / heading",
+    "text": "Systems thinking.\nConsidered execution."
+  },
+  {
+    "position": "Room 01 / The Reception / subcopy and collection introduction",
+    "text": "I connect supply-chain thinking, analytical curiosity, and clear communication to turn complex ideas into practical systems."
+  },
+  {
+    "position": "Room 01 / The Reception / story count",
+    "text": "3 stories to discover"
+  },
+  {
+    "position": "Room 02 / The Library / name and category in navigation and room sign",
+    "text": "The Library\nEducation"
+  },
+  {
+    "position": "Room 02 / The Library / chapter eyebrow",
+    "text": "02 / 07\nEducation"
+  },
+  {
+    "position": "Room 02 / The Library / heading",
+    "text": "A foundation\nfor better questions."
+  },
+  {
+    "position": "Room 02 / The Library / subcopy and collection introduction",
+    "text": "A foundation in business, a curiosity for research, and a habit of asking the next question."
+  },
+  {
+    "position": "Room 02 / The Library / story count",
+    "text": "3 stories to discover"
+  },
+  {
+    "position": "Room 03 / The Study / name and category in navigation and room sign",
+    "text": "The Study\nExperience"
+  },
+  {
+    "position": "Room 03 / The Study / chapter eyebrow",
+    "text": "03 / 07\nExperience"
+  },
+  {
+    "position": "Room 03 / The Study / heading",
+    "text": "Ideas, brought\ninto practice."
+  },
+  {
+    "position": "Room 03 / The Study / subcopy and collection introduction",
+    "text": "Client communication, project planning, documentation, and the everyday discipline that makes work move."
+  },
+  {
+    "position": "Room 03 / The Study / story count",
+    "text": "4 stories to discover"
+  },
+  {
+    "position": "Room 04 / The Project Gallery / name and category in navigation and room sign",
+    "text": "The Project Gallery\nProjects"
+  },
+  {
+    "position": "Room 04 / The Project Gallery / chapter eyebrow",
+    "text": "04 / 07\nProjects"
+  },
+  {
+    "position": "Room 04 / The Project Gallery / heading",
+    "text": "Thinking made\ntangible."
+  },
+  {
+    "position": "Room 04 / The Project Gallery / subcopy and collection introduction",
+    "text": "Supply-chain systems, forecasting tools, interactive simulations, and experiments. Each project is a chance to learn by building."
+  },
+  {
+    "position": "Room 04 / The Project Gallery / story count",
+    "text": "15 stories to discover"
+  },
+  {
+    "position": "Room 05 / The Workshop / name and category in navigation and room sign",
+    "text": "The Workshop\nCapabilities"
+  },
+  {
+    "position": "Room 05 / The Workshop / chapter eyebrow",
+    "text": "05 / 07\nCapabilities"
+  },
+  {
+    "position": "Room 05 / The Workshop / heading",
+    "text": "Analytical depth.\nPractical range."
+  },
+  {
+    "position": "Room 05 / The Workshop / subcopy and collection introduction",
+    "text": "Understand the system. Find the useful signal. Make it clear. Then build something that helps."
+  },
+  {
+    "position": "Room 05 / The Workshop / story count",
+    "text": "4 stories to discover"
+  },
+  {
+    "position": "Room 06 / The Milestone Gallery / name and category in navigation and room sign",
+    "text": "The Milestone Gallery\nMilestones"
+  },
+  {
+    "position": "Room 06 / The Milestone Gallery / chapter eyebrow",
+    "text": "06 / 07\nMilestones"
+  },
+  {
+    "position": "Room 06 / The Milestone Gallery / heading",
+    "text": "Experience that\nshapes perspective."
+  },
+  {
+    "position": "Room 06 / The Milestone Gallery / subcopy and collection introduction",
+    "text": "Leadership, communication, and the moments that taught me to take responsibility for the outcome."
+  },
+  {
+    "position": "Room 06 / The Milestone Gallery / story count",
+    "text": "3 stories to discover"
+  },
+  {
+    "position": "Room 07 / The Lounge / name and category in navigation and room sign",
+    "text": "The Lounge\nContact"
+  },
+  {
+    "position": "Room 07 / The Lounge / chapter eyebrow",
+    "text": "07 / 07\nContact"
+  },
+  {
+    "position": "Room 07 / The Lounge / heading",
+    "text": "Let’s start\na conversation."
+  },
+  {
+    "position": "Room 07 / The Lounge / subcopy and collection introduction",
+    "text": "Interested in graduate and management trainee opportunities in supply chain, planning, operations, and analytics."
+  },
+  {
+    "position": "Room 07 / The Lounge / story count",
+    "text": "3 stories to discover"
+  },
+  {
+    "section": "Floor plan dialog"
+  },
+  {
+    "position": "Floor plan / eyebrow",
+    "text": "YOUR VISIT, YOUR PACE"
+  },
+  {
+    "position": "Floor plan / title",
+    "text": "A place for every\npart of the story."
+  },
+  {
+    "position": "Floor plan / description",
+    "text": "Move directly to a room, or follow the full walkthrough."
+  },
+  {
+    "position": "Floor plan / map annotation",
+    "text": "N ↑\nTHE ENTRANCE\nSEVEN ROOMS. ONE CURIOUS MIND."
+  },
+  {
+    "position": "Floor plan / room 01 button and map tile",
+    "text": "01\nThe Reception\nProfile"
+  },
+  {
+    "position": "Floor plan / room 02 button and map tile",
+    "text": "02\nThe Library\nEducation"
+  },
+  {
+    "position": "Floor plan / room 03 button and map tile",
+    "text": "03\nThe Study\nExperience"
+  },
+  {
+    "position": "Floor plan / room 04 button and map tile",
+    "text": "04\nThe Project Gallery\nProjects"
+  },
+  {
+    "position": "Floor plan / room 05 button and map tile",
+    "text": "05\nThe Workshop\nCapabilities"
+  },
+  {
+    "position": "Floor plan / room 06 button and map tile",
+    "text": "06\nThe Milestone Gallery\nMilestones"
+  },
+  {
+    "position": "Floor plan / room 07 button and map tile",
+    "text": "07\nThe Lounge\nContact"
+  },
+  {
+    "position": "Floor plan / return and dismissal controls",
+    "text": "Back to the front door\nClose"
+  },
+  {
+    "section": "Exhibit and project interface"
+  },
+  {
+    "position": "3D exhibit / default and hover labels",
+    "text": "A CLOSER LOOK ↗\nOPEN STORY ↗"
+  },
+  {
+    "position": "3D exhibit / numbering in room collections",
+    "text": "01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15"
+  },
+  {
+    "position": "3D architecture / entrance plaque",
+    "text": "mt.\nTHE RESIDENCE"
+  },
+  {
+    "position": "3D architecture / room exit labels",
+    "text": "THE LIBRARY\nTHE STUDY\nTHE PROJECT GALLERY\nTHE WORKSHOP\nTHE MILESTONE GALLERY\nTHE LOUNGE\nUNTIL NEXT TIME"
+  },
+  {
+    "position": "3D architecture / portal button",
+    "text": "CONTINUE →"
+  },
+  {
+    "position": "Project collection / introduction",
+    "text": "The complete project collection. Open any project for a closer look."
+  },
+  {
+    "position": "Project collection / thumbnail placeholder",
+    "text": "SCREENSHOTS & FILM COMING SOON"
+  },
+  {
+    "position": "Collection / item button",
+    "text": "Open story"
+  },
+  {
+    "position": "Project detail / media placeholder",
+    "text": "Space for a screen recording, screenshots,\nand the story behind this project."
+  },
+  {
+    "position": "Project detail / media state labels",
+    "text": "Project preview\nMedia coming later"
+  },
+  {
+    "position": "Exhibit detail / default external link label",
+    "text": "Open link"
+  },
+  {
+    "position": "Exhibit detail / return button",
+    "text": "See all stories in this room"
+  },
+  {
+    "position": "Collection and detail / dismissal control",
+    "text": "Close"
+  },
+  {
+    "section": "Room 01 The Reception exhibit copy"
+  },
+  {
+    "position": "The Reception / exhibit 01\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "SUPPLY CHAIN · OPERATIONS · ANALYTICS\nMahera Tasfee\nA BBA candidate at North South University, connecting supply chain management and marketing with practical digital systems. My work brings together analytical curiosity, structured coordination, and clear communication."
+  },
+  {
+    "position": "The Reception / exhibit 02\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "HOW I THINK\nConnect the dots\nI look at how demand, information, people, and resources fit together. That systems perspective informs my approach to planning, analysis, and everyday operations."
+  },
+  {
+    "position": "The Reception / exhibit 03\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "HOW I WORK\nMake it useful\nI like turning a question into something tangible: a clear brief, a practical dashboard, a working prototype, or a more understandable process."
+  },
+  {
+    "section": "Room 02 The Library exhibit copy"
+  },
+  {
+    "position": "The Library / exhibit 01\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "BBA · EXPECTED 2026\nNorth South University\nBachelor of Business Administration. Major in Supply Chain Management and Marketing."
+  },
+  {
+    "position": "The Library / exhibit 02\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "2025—PRESENT\nIndependent Research Exposure\nLiterature review and problem framing across FMCG, AIoT, RMG, operations, and supply-chain management."
+  },
+  {
+    "position": "The Library / exhibit 03\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "FOUNDATION\nCommercial + Operational Thinking\nAn interdisciplinary foundation connecting demand, marketing, information, resources, and execution."
+  },
+  {
+    "section": "Room 03 The Study exhibit copy"
+  },
+  {
+    "position": "The Study / exhibit 01\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "2023—2025 · PLANNING & PROJECT MANAGEMENT\nMindscape Communication\nJunior Executive, Planning & Project Management. Structured briefs, timelines, content plans, presentations, deliverables, and client follow-up across more than 30 initiatives."
+  },
+  {
+    "position": "The Study / exhibit 02\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "2022—2023 · ADMINISTRATION\nAlbeliz.com\nOffice Assistant, Admin. Maintained financial documentation, administrative records, and accurate web-content operations."
+  },
+  {
+    "position": "The Study / exhibit 03\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "2020—2021 · COMMUNICATION\nProject Finance Solution\nCommunication Head, Admin. Managed client communication with 250+ clients and logistics for more than 30 meetings."
+  },
+  {
+    "position": "The Study / exhibit 04\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "2020—2021 · OPERATIONS\nCrossRoads Initiative\nOffice Administrator. Supported operational activities, internal documentation, and daily coordination."
+  },
+  {
+    "section": "Room 04 The Project Gallery exhibit copy"
+  },
+  {
+    "position": "The Project Gallery / exhibit 01\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description / Technology / Link label",
+    "text": "SUPPLY CHAIN ANALYTICS\nSCM Analytics Studio\nA control tower for forecasting, inventory, procurement, logistics, risk, and management reporting.\nPython\nOpen repository"
+  },
+  {
+    "position": "The Project Gallery / exhibit 02\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description / Technology / Link label",
+    "text": "DEMAND PLANNING\nForecastSync\nA guided file-to-forecast workflow with data validation, quality scoring, inventory recommendations, and risk maps.\nTypeScript\nOpen repository"
+  },
+  {
+    "position": "The Project Gallery / exhibit 03\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description / Technology / Link label",
+    "text": "DISTRIBUTION OPERATIONS\nSCM Distributor Management\nAn ERP-style operational interface spanning orders, inventory, transport, delivery, returns, and cost.\nJavaScript\nOpen repository"
+  },
+  {
+    "position": "The Project Gallery / exhibit 04\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description / Technology / Link label",
+    "text": "BUSINESS INTELLIGENCE\nInsightBI\nA collaborative BI workspace for ingesting data, modelling relationships, building reports, and sharing insights.\nTypeScript\nOpen repository"
+  },
+  {
+    "position": "The Project Gallery / exhibit 05\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description / Technology / Link label",
+    "text": "PRODUCT × OPERATIONS\nFruTea\nA consumer concept connecting brand storytelling with demand, sourcing, inventory, and digital experience.\nHTML\nOpen repository"
+  },
+  {
+    "position": "The Project Gallery / exhibit 06\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description / Technology / Link label",
+    "text": "LEARNING SIMULATION\nPurrfect Supply Chain\nA playable simulation of the bullwhip effect, demand variance, service level, and inventory decisions.\nJavaScript\nOpen repository"
+  },
+  {
+    "position": "The Project Gallery / exhibit 07\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description / Technology / Link label",
+    "text": "THE EXPERIMENT ARCHIVE\nsave-farzu\nMini-game collection\nHTML\nOpen repository"
+  },
+  {
+    "position": "The Project Gallery / exhibit 08\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description / Technology / Link label",
+    "text": "THE EXPERIMENT ARCHIVE\nPawPaw-World-3D-v1\nArchived 3D interactive world\nJavaScript\nOpen repository"
+  },
+  {
+    "position": "The Project Gallery / exhibit 09\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description / Technology / Link label",
+    "text": "THE EXPERIMENT ARCHIVE\npawpaw-world\nCanvas exploration game\nHTML\nOpen repository"
+  },
+  {
+    "position": "The Project Gallery / exhibit 10\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description / Technology / Link label",
+    "text": "THE EXPERIMENT ARCHIVE\npawpaw-power-retro-game\nRetro browser game\nJavaScript\nOpen repository"
+  },
+  {
+    "position": "The Project Gallery / exhibit 11\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description / Technology / Link label",
+    "text": "THE EXPERIMENT ARCHIVE\nscm-distributor-management-frontenddesign\nDistribution interface concept\nJavaScript\nOpen repository"
+  },
+  {
+    "position": "The Project Gallery / exhibit 12\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description / Technology / Link label",
+    "text": "THE EXPERIMENT ARCHIVE\nfinance-tracker\nPersonal finance tool\nJavaScript\nOpen repository"
+  },
+  {
+    "position": "The Project Gallery / exhibit 13\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description / Technology / Link label",
+    "text": "THE EXPERIMENT ARCHIVE\ncse-coursework\nProgramming coursework archive\nPython\nOpen repository"
+  },
+  {
+    "position": "The Project Gallery / exhibit 14\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description / Technology / Link label",
+    "text": "THE EXPERIMENT ARCHIVE\nmoodtracker\nPersonal wellbeing tracker\nJavaScript\nOpen repository"
+  },
+  {
+    "position": "The Project Gallery / exhibit 15\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description / Technology / Link label",
+    "text": "THE EXPERIMENT ARCHIVE\nfocusflow-planner\nProductivity planning tool\nJavaScript\nOpen repository"
+  },
+  {
+    "section": "Room 05 The Workshop exhibit copy"
+  },
+  {
+    "position": "The Workshop / exhibit 01\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "ANALYSE\nDecision Intelligence\nExcel, Power BI, data cleaning, forecasting, KPI reporting, and dashboard design. Turning data into a clearer basis for decisions."
+  },
+  {
+    "position": "The Workshop / exhibit 02\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "OPERATE\nSupply-Chain Thinking\nDemand planning, process mapping, inventory logic, project coordination, and Notion workflows. Understanding the connections between decisions and outcomes."
+  },
+  {
+    "position": "The Workshop / exhibit 03\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "COMMUNICATE\nStakeholder Clarity\nClient follow-up, presentations, structured documentation, debate, and team communication. Making the next step easier to understand."
+  },
+  {
+    "position": "The Workshop / exhibit 04\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "BUILD\nDigital Prototyping\nReact, Next.js, TypeScript, Python, Streamlit, Pandas, SQL, and SQLite. Exploring practical tools through hands-on projects."
+  },
+  {
+    "section": "Room 06 The Milestone Gallery exhibit copy"
+  },
+  {
+    "position": "The Milestone Gallery / exhibit 01\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "LEADERSHIP · 2025—PRESENT\nVice President\nNorth South University Debate Club. Tournament direction, team leadership, and competitive communication under pressure."
+  },
+  {
+    "position": "The Milestone Gallery / exhibit 02\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "EXECUTION\n30+ Initiatives\nPlanned and coordinated digital marketing and content initiatives across corporate and development-sector clients."
+  },
+  {
+    "position": "The Milestone Gallery / exhibit 03\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "COMMUNICATION\n250+ Client Interactions\nProfessional communication, structured follow-up, and meeting coordination at meaningful scale."
+  },
+  {
+    "section": "Room 07 The Lounge exhibit copy"
+  },
+  {
+    "position": "The Lounge / exhibit 01\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description / Link label",
+    "text": "PROFESSIONAL NETWORK\nLet’s connect on LinkedIn\nConnect for graduate, management trainee, supply-chain, planning, operations, and analytics opportunities.\nOpen LinkedIn"
+  },
+  {
+    "position": "The Lounge / exhibit 02\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description / Link label",
+    "text": "THE SOURCE OF THE IDEAS\nExplore my GitHub\nPublic projects, prototypes, simulations, and experiments. A closer look at how I learn by building.\nOpen GitHub"
+  },
+  {
+    "position": "The Lounge / exhibit 03\n3D exhibit and collection and detail dialog\nEyebrow / Title / Description",
+    "text": "BASED IN\nDhaka, Bangladesh\nAvailable for graduate and management trainee opportunities in 2026."
+  },
+  {
+    "section": "Accessibility and alternate content"
+  },
+  {
+    "position": "Header / home button accessible name",
+    "text": "Mahera Tasfee, return to entrance"
+  },
+  {
+    "position": "Header / navigation accessible name",
+    "text": "Portfolio shortcuts"
+  },
+  {
+    "position": "Day and night button / accessible names",
+    "text": "Switch to daylight\nSwitch to evening"
+  },
+  {
+    "position": "Entrance / seal and arrow accessible names",
+    "text": "Begin the seven-room journey\nEnter the residence"
+  },
+  {
+    "position": "Footer / room navigation accessible name",
+    "text": "Jump to room"
+  },
+  {
+    "position": "Room 01 / navigation and map accessible names",
+    "text": "1. The Reception\nEnter The Reception"
+  },
+  {
+    "position": "Room 02 / navigation and map accessible names",
+    "text": "2. The Library\nEnter The Library"
+  },
+  {
+    "position": "Room 03 / navigation and map accessible names",
+    "text": "3. The Study\nEnter The Study"
+  },
+  {
+    "position": "Room 04 / navigation and map accessible names",
+    "text": "4. The Project Gallery\nEnter The Project Gallery"
+  },
+  {
+    "position": "Room 05 / navigation and map accessible names",
+    "text": "5. The Workshop\nEnter The Workshop"
+  },
+  {
+    "position": "Room 06 / navigation and map accessible names",
+    "text": "6. The Milestone Gallery\nEnter The Milestone Gallery"
+  },
+  {
+    "position": "Room 07 / navigation and map accessible names",
+    "text": "7. The Lounge\nEnter The Lounge"
+  },
+  {
+    "position": "Footer / visibility accessible names",
+    "text": "Show portfolio labels\nHide labels for an unobstructed view"
+  },
+  {
+    "position": "Footer / camera accessible name",
+    "text": "Recenter camera facing forward"
+  },
+  {
+    "position": "Footer / motion accessible names",
+    "text": "Reduced motion follows your device setting\nResume ambient motion\nReduce motion"
+  },
+  {
+    "position": "Footer / step control accessible names",
+    "text": "Return to entrance\nGo to next room"
+  },
+  {
+    "position": "Floor plan / map accessible description",
+    "text": "Interactive floor plan of seven portfolio rooms"
+  },
+  {
+    "position": "Project screenshot / image alternative text / SCM Analytics Studio",
+    "text": "SCM Analytics Studio project screenshot"
+  },
+  {
+    "position": "Project screenshot / image alternative text / ForecastSync",
+    "text": "ForecastSync project screenshot"
+  },
+  {
+    "position": "Project screenshot / image alternative text / SCM Distributor Management",
+    "text": "SCM Distributor Management project screenshot"
+  },
+  {
+    "position": "Project screenshot / image alternative text / InsightBI",
+    "text": "InsightBI project screenshot"
+  },
+  {
+    "position": "Project screenshot / image alternative text / FruTea",
+    "text": "FruTea project screenshot"
+  },
+  {
+    "position": "Project screenshot / image alternative text / Purrfect Supply Chain",
+    "text": "Purrfect Supply Chain project screenshot"
+  },
+  {
+    "position": "JavaScript disabled / heading and description",
+    "text": "Mahera Tasfee\nSupply chain, operations, analytics, and digital systems."
+  },
+  {
+    "position": "JavaScript disabled / links",
+    "text": "Explore GitHub\nConnect on LinkedIn"
+  },
+  {
+    "section": "Browser and social preview copy"
+  },
+  {
+    "position": "Browser title and social preview title",
+    "text": "Mahera Tasfee | Supply Chain, Operations & Analytics"
+  },
+  {
+    "position": "Search description",
+    "text": "Portfolio of Mahera Tasfee, a Supply Chain Management and Marketing BBA candidate focused on operations, planning, analytics, and practical digital systems."
+  },
+  {
+    "position": "Search keywords",
+    "text": "Mahera Tasfee\nsupply chain management\noperations\ndemand planning\nbusiness analytics\nPower BI\nDhaka"
+  },
+  {
+    "position": "Author and social site name",
+    "text": "Mahera Tasfee"
+  },
+  {
+    "position": "Open Graph description",
+    "text": "Turning operational complexity into decision-ready clarity through supply-chain thinking, analytics, and practical digital systems."
+  },
+  {
+    "position": "Open Graph image alternative text",
+    "text": "Mahera Tasfee — Supply chain, analytics, and digital systems"
+  },
+  {
+    "position": "Twitter preview description",
+    "text": "Supply chain · analytics · digital systems"
+  }
+]

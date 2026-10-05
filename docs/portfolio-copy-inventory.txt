@@ -1,0 +1,762 @@
+ENTRANCE AND SHARED NAVIGATION
+
+Header / monogram and identity
+mt
+MAHERA TASFEE
+A MIND FOR WHAT’S NEXT
+
+Header / navigation buttons
+Profile
+Projects 15
+The floor plan
+
+Header / contact link
+Let’s connect
+
+Entrance / eyebrow and edition
+WELCOME TO MY WORLD
+VOL. 01 / 2026
+
+Entrance / main heading
+Mahera
+Tasfee.
+
+Entrance / subheading
+A business mind.
+A builder’s instinct.
+
+Entrance / introduction
+I connect the dots between people, data, and operations — and turn that thinking into things that work.
+
+Entrance / subject tags
+Supply chain / Operations / Analytics
+
+Entrance / primary button
+Step inside my world
+
+Entrance / secondary button
+Or, go straight to my work
+
+Entrance / location and availability footnote
+BASED IN DHAKA, BANGLADESH
+OPEN TO OPPORTUNITIES
+
+Entrance / scene label
+THE RESIDENCE
+
+Entrance / rotating seal
+SCROLL TO EXPLORE · A WORLD OF IDEAS ·
+
+Entrance / architecture caption
+AN EXPLORATION IN SEVEN CHAPTERS
+Every room,
+a different perspective.
+
+Entrance / scroll invitation
+SCROLL TO ENTER
+Take a little look around
+
+SHARED ROOM INTERFACE AND DISPLAY STATES
+
+Scene / day and night button states
+GOLDEN HOUR
+AFTER HOURS
+
+Scene / coordinates and caption states currently hidden by styling
+23.81° N / 90.41° E
+CHAPTER 01 / 07
+CHAPTER 02 / 07
+CHAPTER 03 / 07
+CHAPTER 04 / 07
+CHAPTER 05 / 07
+CHAPTER 06 / 07
+CHAPTER 07 / 07
+EVENING STUDY
+LIGHT & PERSPECTIVE
+
+Scene / loading and fallback messages
+Preparing the residence…
+Opening the front door…
+Explore the portfolio through the room guide.
+
+Scene / entrance and interior instructions
+A scroll becomes a journey.
+Drag to look around · scroll to walk · select an exhibit
+
+Room / collection label
+THE COLLECTION
+
+Room / discover button states
+Discover this room
+Explore all 15 projects
+
+Footer / room journey labels
+SCROLL TO CONTINUE
+THE LOUNGE
+
+Footer / visited room counter states
+1 of 7 rooms explored
+2 of 7 rooms explored
+3 of 7 rooms explored
+4 of 7 rooms explored
+5 of 7 rooms explored
+6 of 7 rooms explored
+7 of 7 rooms explored
+
+Footer / visibility controls
+Clear view
+Show labels
+
+Footer / camera control
+Reset view
+
+Footer / motion control states
+Motion
+Still
+
+ROOM INTRODUCTIONS AND NAVIGATION LABELS
+
+Room 01 / The Reception / name and category in navigation and room sign
+The Reception
+Profile
+
+Room 01 / The Reception / chapter eyebrow
+01 / 07
+Profile
+
+Room 01 / The Reception / heading
+Systems thinking.
+Considered execution.
+
+Room 01 / The Reception / subcopy and collection introduction
+I connect supply-chain thinking, analytical curiosity, and clear communication to turn complex ideas into practical systems.
+
+Room 01 / The Reception / story count
+3 stories to discover
+
+Room 02 / The Library / name and category in navigation and room sign
+The Library
+Education
+
+Room 02 / The Library / chapter eyebrow
+02 / 07
+Education
+
+Room 02 / The Library / heading
+A foundation
+for better questions.
+
+Room 02 / The Library / subcopy and collection introduction
+A foundation in business, a curiosity for research, and a habit of asking the next question.
+
+Room 02 / The Library / story count
+3 stories to discover
+
+Room 03 / The Study / name and category in navigation and room sign
+The Study
+Experience
+
+Room 03 / The Study / chapter eyebrow
+03 / 07
+Experience
+
+Room 03 / The Study / heading
+Ideas, brought
+into practice.
+
+Room 03 / The Study / subcopy and collection introduction
+Client communication, project planning, documentation, and the everyday discipline that makes work move.
+
+Room 03 / The Study / story count
+4 stories to discover
+
+Room 04 / The Project Gallery / name and category in navigation and room sign
+The Project Gallery
+Projects
+
+Room 04 / The Project Gallery / chapter eyebrow
+04 / 07
+Projects
+
+Room 04 / The Project Gallery / heading
+Thinking made
+tangible.
+
+Room 04 / The Project Gallery / subcopy and collection introduction
+Supply-chain systems, forecasting tools, interactive simulations, and experiments. Each project is a chance to learn by building.
+
+Room 04 / The Project Gallery / story count
+15 stories to discover
+
+Room 05 / The Workshop / name and category in navigation and room sign
+The Workshop
+Capabilities
+
+Room 05 / The Workshop / chapter eyebrow
+05 / 07
+Capabilities
+
+Room 05 / The Workshop / heading
+Analytical depth.
+Practical range.
+
+Room 05 / The Workshop / subcopy and collection introduction
+Understand the system. Find the useful signal. Make it clear. Then build something that helps.
+
+Room 05 / The Workshop / story count
+4 stories to discover
+
+Room 06 / The Milestone Gallery / name and category in navigation and room sign
+The Milestone Gallery
+Milestones
+
+Room 06 / The Milestone Gallery / chapter eyebrow
+06 / 07
+Milestones
+
+Room 06 / The Milestone Gallery / heading
+Experience that
+shapes perspective.
+
+Room 06 / The Milestone Gallery / subcopy and collection introduction
+Leadership, communication, and the moments that taught me to take responsibility for the outcome.
+
+Room 06 / The Milestone Gallery / story count
+3 stories to discover
+
+Room 07 / The Lounge / name and category in navigation and room sign
+The Lounge
+Contact
+
+Room 07 / The Lounge / chapter eyebrow
+07 / 07
+Contact
+
+Room 07 / The Lounge / heading
+Let’s start
+a conversation.
+
+Room 07 / The Lounge / subcopy and collection introduction
+Interested in graduate and management trainee opportunities in supply chain, planning, operations, and analytics.
+
+Room 07 / The Lounge / story count
+3 stories to discover
+
+FLOOR PLAN DIALOG
+
+Floor plan / eyebrow
+YOUR VISIT, YOUR PACE
+
+Floor plan / title
+A place for every
+part of the story.
+
+Floor plan / description
+Move directly to a room, or follow the full walkthrough.
+
+Floor plan / map annotation
+N ↑
+THE ENTRANCE
+SEVEN ROOMS. ONE CURIOUS MIND.
+
+Floor plan / room 01 button and map tile
+01
+The Reception
+Profile
+
+Floor plan / room 02 button and map tile
+02
+The Library
+Education
+
+Floor plan / room 03 button and map tile
+03
+The Study
+Experience
+
+Floor plan / room 04 button and map tile
+04
+The Project Gallery
+Projects
+
+Floor plan / room 05 button and map tile
+05
+The Workshop
+Capabilities
+
+Floor plan / room 06 button and map tile
+06
+The Milestone Gallery
+Milestones
+
+Floor plan / room 07 button and map tile
+07
+The Lounge
+Contact
+
+Floor plan / return and dismissal controls
+Back to the front door
+Close
+
+EXHIBIT AND PROJECT INTERFACE
+
+3D exhibit / default and hover labels
+A CLOSER LOOK ↗
+OPEN STORY ↗
+
+3D exhibit / numbering in room collections
+01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15
+
+3D architecture / entrance plaque
+mt.
+THE RESIDENCE
+
+3D architecture / room exit labels
+THE LIBRARY
+THE STUDY
+THE PROJECT GALLERY
+THE WORKSHOP
+THE MILESTONE GALLERY
+THE LOUNGE
+UNTIL NEXT TIME
+
+3D architecture / portal button
+CONTINUE →
+
+Project collection / introduction
+The complete project collection. Open any project for a closer look.
+
+Project collection / thumbnail placeholder
+SCREENSHOTS & FILM COMING SOON
+
+Collection / item button
+Open story
+
+Project detail / media placeholder
+Space for a screen recording, screenshots,
+and the story behind this project.
+
+Project detail / media state labels
+Project preview
+Media coming later
+
+Exhibit detail / default external link label
+Open link
+
+Exhibit detail / return button
+See all stories in this room
+
+Collection and detail / dismissal control
+Close
+
+ROOM 01 THE RECEPTION EXHIBIT COPY
+
+The Reception / exhibit 01
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+SUPPLY CHAIN · OPERATIONS · ANALYTICS
+Mahera Tasfee
+A BBA candidate at North South University, connecting supply chain management and marketing with practical digital systems. My work brings together analytical curiosity, structured coordination, and clear communication.
+
+The Reception / exhibit 02
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+HOW I THINK
+Connect the dots
+I look at how demand, information, people, and resources fit together. That systems perspective informs my approach to planning, analysis, and everyday operations.
+
+The Reception / exhibit 03
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+HOW I WORK
+Make it useful
+I like turning a question into something tangible: a clear brief, a practical dashboard, a working prototype, or a more understandable process.
+
+ROOM 02 THE LIBRARY EXHIBIT COPY
+
+The Library / exhibit 01
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+BBA · EXPECTED 2026
+North South University
+Bachelor of Business Administration. Major in Supply Chain Management and Marketing.
+
+The Library / exhibit 02
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+2025—PRESENT
+Independent Research Exposure
+Literature review and problem framing across FMCG, AIoT, RMG, operations, and supply-chain management.
+
+The Library / exhibit 03
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+FOUNDATION
+Commercial + Operational Thinking
+An interdisciplinary foundation connecting demand, marketing, information, resources, and execution.
+
+ROOM 03 THE STUDY EXHIBIT COPY
+
+The Study / exhibit 01
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+2023—2025 · PLANNING & PROJECT MANAGEMENT
+Mindscape Communication
+Junior Executive, Planning & Project Management. Structured briefs, timelines, content plans, presentations, deliverables, and client follow-up across more than 30 initiatives.
+
+The Study / exhibit 02
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+2022—2023 · ADMINISTRATION
+Albeliz.com
+Office Assistant, Admin. Maintained financial documentation, administrative records, and accurate web-content operations.
+
+The Study / exhibit 03
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+2020—2021 · COMMUNICATION
+Project Finance Solution
+Communication Head, Admin. Managed client communication with 250+ clients and logistics for more than 30 meetings.
+
+The Study / exhibit 04
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+2020—2021 · OPERATIONS
+CrossRoads Initiative
+Office Administrator. Supported operational activities, internal documentation, and daily coordination.
+
+ROOM 04 THE PROJECT GALLERY EXHIBIT COPY
+
+The Project Gallery / exhibit 01
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description / Technology / Link label
+SUPPLY CHAIN ANALYTICS
+SCM Analytics Studio
+A control tower for forecasting, inventory, procurement, logistics, risk, and management reporting.
+Python
+Open repository
+
+The Project Gallery / exhibit 02
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description / Technology / Link label
+DEMAND PLANNING
+ForecastSync
+A guided file-to-forecast workflow with data validation, quality scoring, inventory recommendations, and risk maps.
+TypeScript
+Open repository
+
+The Project Gallery / exhibit 03
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description / Technology / Link label
+DISTRIBUTION OPERATIONS
+SCM Distributor Management
+An ERP-style operational interface spanning orders, inventory, transport, delivery, returns, and cost.
+JavaScript
+Open repository
+
+The Project Gallery / exhibit 04
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description / Technology / Link label
+BUSINESS INTELLIGENCE
+InsightBI
+A collaborative BI workspace for ingesting data, modelling relationships, building reports, and sharing insights.
+TypeScript
+Open repository
+
+The Project Gallery / exhibit 05
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description / Technology / Link label
+PRODUCT × OPERATIONS
+FruTea
+A consumer concept connecting brand storytelling with demand, sourcing, inventory, and digital experience.
+HTML
+Open repository
+
+The Project Gallery / exhibit 06
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description / Technology / Link label
+LEARNING SIMULATION
+Purrfect Supply Chain
+A playable simulation of the bullwhip effect, demand variance, service level, and inventory decisions.
+JavaScript
+Open repository
+
+The Project Gallery / exhibit 07
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description / Technology / Link label
+THE EXPERIMENT ARCHIVE
+save-farzu
+Mini-game collection
+HTML
+Open repository
+
+The Project Gallery / exhibit 08
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description / Technology / Link label
+THE EXPERIMENT ARCHIVE
+PawPaw-World-3D-v1
+Archived 3D interactive world
+JavaScript
+Open repository
+
+The Project Gallery / exhibit 09
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description / Technology / Link label
+THE EXPERIMENT ARCHIVE
+pawpaw-world
+Canvas exploration game
+HTML
+Open repository
+
+The Project Gallery / exhibit 10
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description / Technology / Link label
+THE EXPERIMENT ARCHIVE
+pawpaw-power-retro-game
+Retro browser game
+JavaScript
+Open repository
+
+The Project Gallery / exhibit 11
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description / Technology / Link label
+THE EXPERIMENT ARCHIVE
+scm-distributor-management-frontenddesign
+Distribution interface concept
+JavaScript
+Open repository
+
+The Project Gallery / exhibit 12
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description / Technology / Link label
+THE EXPERIMENT ARCHIVE
+finance-tracker
+Personal finance tool
+JavaScript
+Open repository
+
+The Project Gallery / exhibit 13
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description / Technology / Link label
+THE EXPERIMENT ARCHIVE
+cse-coursework
+Programming coursework archive
+Python
+Open repository
+
+The Project Gallery / exhibit 14
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description / Technology / Link label
+THE EXPERIMENT ARCHIVE
+moodtracker
+Personal wellbeing tracker
+JavaScript
+Open repository
+
+The Project Gallery / exhibit 15
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description / Technology / Link label
+THE EXPERIMENT ARCHIVE
+focusflow-planner
+Productivity planning tool
+JavaScript
+Open repository
+
+ROOM 05 THE WORKSHOP EXHIBIT COPY
+
+The Workshop / exhibit 01
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+ANALYSE
+Decision Intelligence
+Excel, Power BI, data cleaning, forecasting, KPI reporting, and dashboard design. Turning data into a clearer basis for decisions.
+
+The Workshop / exhibit 02
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+OPERATE
+Supply-Chain Thinking
+Demand planning, process mapping, inventory logic, project coordination, and Notion workflows. Understanding the connections between decisions and outcomes.
+
+The Workshop / exhibit 03
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+COMMUNICATE
+Stakeholder Clarity
+Client follow-up, presentations, structured documentation, debate, and team communication. Making the next step easier to understand.
+
+The Workshop / exhibit 04
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+BUILD
+Digital Prototyping
+React, Next.js, TypeScript, Python, Streamlit, Pandas, SQL, and SQLite. Exploring practical tools through hands-on projects.
+
+ROOM 06 THE MILESTONE GALLERY EXHIBIT COPY
+
+The Milestone Gallery / exhibit 01
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+LEADERSHIP · 2025—PRESENT
+Vice President
+North South University Debate Club. Tournament direction, team leadership, and competitive communication under pressure.
+
+The Milestone Gallery / exhibit 02
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+EXECUTION
+30+ Initiatives
+Planned and coordinated digital marketing and content initiatives across corporate and development-sector clients.
+
+The Milestone Gallery / exhibit 03
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+COMMUNICATION
+250+ Client Interactions
+Professional communication, structured follow-up, and meeting coordination at meaningful scale.
+
+ROOM 07 THE LOUNGE EXHIBIT COPY
+
+The Lounge / exhibit 01
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description / Link label
+PROFESSIONAL NETWORK
+Let’s connect on LinkedIn
+Connect for graduate, management trainee, supply-chain, planning, operations, and analytics opportunities.
+Open LinkedIn
+
+The Lounge / exhibit 02
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description / Link label
+THE SOURCE OF THE IDEAS
+Explore my GitHub
+Public projects, prototypes, simulations, and experiments. A closer look at how I learn by building.
+Open GitHub
+
+The Lounge / exhibit 03
+3D exhibit and collection and detail dialog
+Eyebrow / Title / Description
+BASED IN
+Dhaka, Bangladesh
+Available for graduate and management trainee opportunities in 2026.
+
+ACCESSIBILITY AND ALTERNATE CONTENT
+
+Header / home button accessible name
+Mahera Tasfee, return to entrance
+
+Header / navigation accessible name
+Portfolio shortcuts
+
+Day and night button / accessible names
+Switch to daylight
+Switch to evening
+
+Entrance / seal and arrow accessible names
+Begin the seven-room journey
+Enter the residence
+
+Footer / room navigation accessible name
+Jump to room
+
+Room 01 / navigation and map accessible names
+1. The Reception
+Enter The Reception
+
+Room 02 / navigation and map accessible names
+2. The Library
+Enter The Library
+
+Room 03 / navigation and map accessible names
+3. The Study
+Enter The Study
+
+Room 04 / navigation and map accessible names
+4. The Project Gallery
+Enter The Project Gallery
+
+Room 05 / navigation and map accessible names
+5. The Workshop
+Enter The Workshop
+
+Room 06 / navigation and map accessible names
+6. The Milestone Gallery
+Enter The Milestone Gallery
+
+Room 07 / navigation and map accessible names
+7. The Lounge
+Enter The Lounge
+
+Footer / visibility accessible names
+Show portfolio labels
+Hide labels for an unobstructed view
+
+Footer / camera accessible name
+Recenter camera facing forward
+
+Footer / motion accessible names
+Reduced motion follows your device setting
+Resume ambient motion
+Reduce motion
+
+Footer / step control accessible names
+Return to entrance
+Go to next room
+
+Floor plan / map accessible description
+Interactive floor plan of seven portfolio rooms
+
+Project screenshot / image alternative text / SCM Analytics Studio
+SCM Analytics Studio project screenshot
+
+Project screenshot / image alternative text / ForecastSync
+ForecastSync project screenshot
+
+Project screenshot / image alternative text / SCM Distributor Management
+SCM Distributor Management project screenshot
+
+Project screenshot / image alternative text / InsightBI
+InsightBI project screenshot
+
+Project screenshot / image alternative text / FruTea
+FruTea project screenshot
+
+Project screenshot / image alternative text / Purrfect Supply Chain
+Purrfect Supply Chain project screenshot
+
+JavaScript disabled / heading and description
+Mahera Tasfee
+Supply chain, operations, analytics, and digital systems.
+
+JavaScript disabled / links
+Explore GitHub
+Connect on LinkedIn
+
+BROWSER AND SOCIAL PREVIEW COPY
+
+Browser title and social preview title
+Mahera Tasfee | Supply Chain, Operations & Analytics
+
+Search description
+Portfolio of Mahera Tasfee, a Supply Chain Management and Marketing BBA candidate focused on operations, planning, analytics, and practical digital systems.
+
+Search keywords
+Mahera Tasfee
+supply chain management
+operations
+demand planning
+business analytics
+Power BI
+Dhaka
+
+Author and social site name
+Mahera Tasfee
+
+Open Graph description
+Turning operational complexity into decision-ready clarity through supply-chain thinking, analytics, and practical digital systems.
+
+Open Graph image alternative text
+Mahera Tasfee — Supply chain, analytics, and digital systems
+
+Twitter preview description
+Supply chain · analytics · digital systems

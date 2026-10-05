@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 
@@ -12,8 +12,16 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+};
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://mahera-tasfee-portfolio.tagarttboy.chatgpt.site'),
+  metadataBase: new URL(
+    'https://mahera-tasfee-portfolio.tagarttboy.chatgpt.site',
+  ),
   title: 'Mahera Tasfee | Supply Chain, Operations & Analytics',
   description:
     'Portfolio of Mahera Tasfee, a Supply Chain Management and Marketing BBA candidate focused on operations, planning, analytics, and practical digital systems.',
