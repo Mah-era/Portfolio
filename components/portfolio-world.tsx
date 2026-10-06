@@ -34,10 +34,9 @@ import {
   type WorldItem,
 } from '@/lib/portfolio-data';
 
-const sceneFont =
-  process.env.GITHUB_PAGES === 'true'
-    ? '/Portfolio/fonts/scene.woff2'
-    : '/fonts/scene.woff2';
+// Relative to the current document so the font works at localhost and under
+// the GitHub Pages project path (/Portfolio/).
+const sceneFont = './fonts/scene.woff2';
 function SceneText(props: any) {
   return <DreiText font={sceneFont} {...props} />;
 }
