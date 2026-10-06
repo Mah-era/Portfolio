@@ -695,7 +695,7 @@ function Exhibit({
                 color="#2e332f"
               >
                 {item.title}
-              </Text>
+              </SceneText>
               <SceneText
                 position={[0, small ? -0.35 : -0.42, 0.1]}
                 fontSize={0.1}
@@ -704,7 +704,7 @@ function Exhibit({
                 color={accent}
               >
                 {item.eyebrow}
-              </Text>
+              </SceneText>
             </>
           )}
           <SceneText
@@ -714,7 +714,7 @@ function Exhibit({
             color={accent}
           >
             {String(index + 1).padStart(2, '0')}
-          </Text>
+          </SceneText>
           <SceneText
             position={[small ? 0.86 : 1.29, small ? -0.59 : -0.9, 0.105]}
             anchorX="right"
@@ -727,7 +727,7 @@ function Exhibit({
               : item.image
                 ? item.title
                 : 'A CLOSER LOOK ↗'}
-          </Text>
+          </SceneText>
         </group>
       </Float>
     </group>
@@ -846,11 +846,15 @@ function RoomShell({
           color="#6e604a"
         >
           {roomData[roomOrder[index + 1]].label.toUpperCase()}
-        </Text>
+        </SceneText>
       )}
-      <SceneText position={[-6.15, 5.12, -7.58]} fontSize={0.45} color="#867355">
+      <SceneText
+        position={[-6.15, 5.12, -7.58]}
+        fontSize={0.45}
+        color="#867355"
+      >
         {String(index + 1).padStart(2, '0')}
-      </Text>
+      </SceneText>
       <pointLight
         position={[0, 4, 1]}
         color="#fff0cf"
@@ -1075,9 +1079,13 @@ function Room({
             <ringGeometry args={[0.2, 0.24, 32]} />
             <meshBasicMaterial color={data.accent} transparent opacity={0.8} />
           </mesh>
-          <SceneText position={[0, -0.47, 0.02]} fontSize={0.14} color={data.ink}>
+          <SceneText
+            position={[0, -0.47, 0.02]}
+            fontSize={0.14}
+            color={data.ink}
+          >
             CONTINUE →
-          </Text>
+          </SceneText>
         </group>
       )}
       {index === 6 && (
@@ -1099,7 +1107,7 @@ function Room({
             color="#42463b"
           >
             go front
-          </Text>
+          </SceneText>
         </group>
       )}
     </group>
@@ -1284,7 +1292,7 @@ function Exterior({
         color="#725f43"
       >
         mt.
-      </Text>
+      </SceneText>
       <SceneText
         position={[-3.12, 1.22, 8.5]}
         fontSize={0.075}
@@ -1292,7 +1300,7 @@ function Exterior({
         color="#725f43"
       >
         THE RESIDENCE
-      </Text>
+      </SceneText>
       {[-2.3, 2.3].map((x) => (
         <group key={x} position={[x, 2.8, 8.54]}>
           <mesh>
