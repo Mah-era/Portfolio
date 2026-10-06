@@ -1610,11 +1610,7 @@ function Scene(props: WorldProps) {
         groundColor={props.night ? '#55402d' : '#99704c'}
         intensity={props.night ? 0.22 : 0.85}
       />
-      <Environment
-        resolution={64}
-        frames={1}
-        environmentIntensity={props.night ? 0.12 : 0.55}
-      >
+      <group>
         <Lightformer
           form="rect"
           intensity={3}
@@ -1639,7 +1635,7 @@ function Scene(props: WorldProps) {
           position={[0, 10, 0]}
           rotation={[Math.PI / 2, 0, 0]}
         />
-      </Environment>
+      </group>
       <primitive object={sunlightTarget} position={[0, 0, -active * 16]} />
       <directionalLight
         ref={sun}
