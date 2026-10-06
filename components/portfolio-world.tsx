@@ -4,7 +4,6 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import {
   Float,
   Html,
-  Image as SceneImage,
   RoundedBox,
   Environment,
   Lightformer,
@@ -677,16 +676,7 @@ function Exhibit({
             color={accent}
             round={0.08}
           />
-          {item.image ? (
-            <Suspense fallback={null}>
-              <SceneImage
-                url={item.image}
-                position={[0, 0.18, 0.092]}
-                scale={small ? [1.82, 0.95] : [2.65, 1.45]}
-                toneMapped={false}
-              />
-            </Suspense>
-          ) : (
+          {false ? (
             <>
               <SceneText
                 position={[0, small ? 0.16 : 0.25, 0.1]}
