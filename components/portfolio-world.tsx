@@ -6,7 +6,7 @@ import {
   Html,
   Image as SceneImage,
   RoundedBox,
-  Text,
+  Text as DreiText,
   Environment,
   Lightformer,
 } from '@react-three/drei';
@@ -33,6 +33,14 @@ import {
   type RoomId,
   type WorldItem,
 } from '@/lib/portfolio-data';
+
+const sceneFont =
+  process.env.GITHUB_PAGES === 'true'
+    ? '/Portfolio/fonts/scene.woff2'
+    : '/fonts/scene.woff2';
+function SceneText(props: any) {
+  return <DreiText font={sceneFont} {...props} />;
+}
 import {
   KineticSculpture,
   Portal,
