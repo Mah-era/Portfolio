@@ -698,7 +698,7 @@ function Exhibit({
                 {item.eyebrow}
               </SceneText>
             </>
-          )}
+          ) : null}
           <SceneText
             position={[-(small ? 0.86 : 1.29), small ? -0.59 : -0.9, 0.105]}
             anchorX="left"
