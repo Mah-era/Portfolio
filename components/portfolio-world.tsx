@@ -6,7 +6,6 @@ import {
   Html,
   Image as SceneImage,
   RoundedBox,
-  Text as DreiText,
   Environment,
   Lightformer,
 } from '@react-three/drei';
@@ -38,7 +37,11 @@ import {
 // the GitHub Pages project path (/Portfolio/).
 const sceneFont = './fonts/scene.woff2';
 function SceneText(props: any) {
-  return <DreiText font={sceneFont} {...props} />;
+  // Troika's worker-based SDF text can fail on static Pages runtimes where
+  // worker module scope has no window. Labels are duplicated in the accessible
+  // HTML guide, so keep this visual layer non-blocking and worker-free.
+  void props;
+  return null;
 }
 import {
   KineticSculpture,
