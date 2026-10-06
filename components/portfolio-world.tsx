@@ -686,7 +686,7 @@ function Exhibit({
             </Suspense>
           ) : (
             <>
-              <Text
+              <SceneText
                 position={[0, small ? 0.16 : 0.25, 0.1]}
                 fontSize={small ? 0.18 : 0.25}
                 maxWidth={small ? 1.65 : 2.48}
@@ -696,7 +696,7 @@ function Exhibit({
               >
                 {item.title}
               </Text>
-              <Text
+              <SceneText
                 position={[0, small ? -0.35 : -0.42, 0.1]}
                 fontSize={0.1}
                 maxWidth={small ? 1.7 : 2.5}
@@ -707,7 +707,7 @@ function Exhibit({
               </Text>
             </>
           )}
-          <Text
+          <SceneText
             position={[-(small ? 0.86 : 1.29), small ? -0.59 : -0.9, 0.105]}
             anchorX="left"
             fontSize={0.1}
@@ -715,7 +715,7 @@ function Exhibit({
           >
             {String(index + 1).padStart(2, '0')}
           </Text>
-          <Text
+          <SceneText
             position={[small ? 0.86 : 1.29, small ? -0.59 : -0.9, 0.105]}
             anchorX="right"
             fontSize={0.1}
@@ -839,7 +839,7 @@ function RoomShell({
       ))}
       <Window at={[6.83, 3.15, 1.8]} rotation={[0, -Math.PI / 2, 0]} />
       {index < 6 && (
-        <Text
+        <SceneText
           position={[0, 5.22, -7.6]}
           fontSize={0.18}
           letterSpacing={0.17}
@@ -848,7 +848,7 @@ function RoomShell({
           {roomData[roomOrder[index + 1]].label.toUpperCase()}
         </Text>
       )}
-      <Text position={[-6.15, 5.12, -7.58]} fontSize={0.45} color="#867355">
+      <SceneText position={[-6.15, 5.12, -7.58]} fontSize={0.45} color="#867355">
         {String(index + 1).padStart(2, '0')}
       </Text>
       <pointLight
@@ -1075,7 +1075,7 @@ function Room({
             <ringGeometry args={[0.2, 0.24, 32]} />
             <meshBasicMaterial color={data.accent} transparent opacity={0.8} />
           </mesh>
-          <Text position={[0, -0.47, 0.02]} fontSize={0.14} color={data.ink}>
+          <SceneText position={[0, -0.47, 0.02]} fontSize={0.14} color={data.ink}>
             CONTINUE →
           </Text>
         </group>
@@ -1092,7 +1092,7 @@ function Room({
             <planeGeometry args={[3.1, 1.1]} />
             <meshBasicMaterial transparent opacity={0} depthWrite={false} />
           </mesh>
-          <Text
+          <SceneText
             position={[0, 0, 0.01]}
             fontSize={0.38}
             letterSpacing={0.06}
@@ -1277,7 +1277,7 @@ function Exterior({
         <Sofa at={[0, 0, 0]} color="#c8b898" />
         <Table at={[0.2, 0, 1.65]} round />
       </group>
-      <Text
+      <SceneText
         position={[-3.12, 1.65, 8.5]}
         fontSize={0.3}
         letterSpacing={0.03}
@@ -1285,7 +1285,7 @@ function Exterior({
       >
         mt.
       </Text>
-      <Text
+      <SceneText
         position={[-3.12, 1.22, 8.5]}
         fontSize={0.075}
         letterSpacing={0.12}
