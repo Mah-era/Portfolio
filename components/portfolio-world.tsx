@@ -1711,15 +1711,7 @@ export function PortfolioWorld(props: WorldProps) {
         }}
         fallback={<WebGLFallback />}
       >
-        <Suspense
-          fallback={
-            <Html center>
-              <div className="scene-loading">Opening the front door…</div>
-            </Html>
-          }
-        >
-          <Scene {...props} />
-        </Suspense>
+        <Scene {...props} />
       </Canvas>
     </WorldBoundary>
   );
