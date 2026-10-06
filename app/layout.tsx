@@ -20,7 +20,9 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    'https://mahera-tasfee-portfolio.tagarttboy.chatgpt.site',
+    process.env.GITHUB_PAGES === 'true'
+      ? 'https://mah-era.github.io'
+      : 'https://mahera-tasfee-portfolio.tagarttboy.chatgpt.site',
   ),
   title: 'Mahera Tasfee | Supply Chain, Operations & Analytics',
   description:
