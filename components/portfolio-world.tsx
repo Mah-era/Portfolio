@@ -840,6 +840,8 @@ function Exhibit({
 }) {
   const [hover, setHover] = useState(false);
   const suppressClick = useContext(LookContext);
+  const cardWidth = small ? 2.05 : 2.9;
+  const cardHeight = small ? 1.52 : 2.15;
   useEffect(
     () => () => {
       document.body.style.cursor = '';
@@ -854,9 +856,6 @@ function Exhibit({
         rotationIntensity={reduced ? 0 : 0.08}
       >
         <group
-          scale={hover ? 1.1 : 1}
-          position={[0, 0, hover ? 0.28 : 0]}
-          rotation={hover ? [0, -rotation[1], 0] : [0, 0, 0]}
           onClick={(e) => {
             e.stopPropagation();
             if (!suppressClick?.current) onInspect(item);
@@ -871,9 +870,19 @@ function Exhibit({
             document.body.style.cursor = '';
           }}
         >
+          <mesh position={[0, 0, -0.18]} renderOrder={0}>
+            <planeGeometry args={[cardWidth + 0.18, cardHeight + 0.18]} />
+            <meshBasicMaterial
+              color={accent}
+              transparent
+              opacity={hover ? 0.34 : 0}
+              depthWrite={false}
+              blending={THREE.AdditiveBlending}
+            />
+          </mesh>
           <Block
-            size={[small ? 2.05 : 2.9, small ? 1.52 : 2.15, 0.16]}
-            color={hover ? '#e5dfcd' : cream}
+            size={[cardWidth, cardHeight, 0.16]}
+            color={hover ? '#fff8e8' : cream}
             round={0.1}
           />
           <Block
@@ -881,6 +890,23 @@ function Exhibit({
             size={[small ? 2.17 : 3.04, small ? 1.64 : 2.3, 0.13]}
             color={accent}
             round={0.08}
+          />
+          <mesh position={[0, 0, 0.092]} renderOrder={2}>
+            <planeGeometry args={[cardWidth * 0.97, cardHeight * 0.95]} />
+            <meshBasicMaterial
+              color="#fff0c4"
+              transparent
+              opacity={hover ? 0.2 : 0}
+              depthWrite={false}
+              blending={THREE.AdditiveBlending}
+            />
+          </mesh>
+          <pointLight
+            position={[0, 0.15, 0.8]}
+            color="#ffe2ad"
+            intensity={hover ? 3.4 : 0}
+            distance={small ? 3 : 3.8}
+            decay={2}
           />
           {
             <>
