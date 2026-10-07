@@ -726,6 +726,37 @@ svg g:focus-visible {
     serif;
   background: radial-gradient(ellipse at 60% 30%, #e6d7b5, #b4bca8);
 }
+.world-access-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  place-content: center;
+  gap: 14px;
+  padding: 40px;
+  color: #4d5144;
+  text-align: center;
+  background:
+    radial-gradient(circle at 70% 20%, #f4dfb5 0, transparent 34%),
+    linear-gradient(135deg, #d9ded2, #b9c1af);
+}
+.world-access-fallback span,
+.world-access-fallback small {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.world-access-fallback strong {
+  max-width: 360px;
+  font:
+    italic 30px Georgia,
+    serif;
+  font-weight: 400;
+}
+.world-access-fallback small {
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
 .after-hours {
   --ink: #ede4d3;
   --body: #b6ac9b;
