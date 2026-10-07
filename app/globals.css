@@ -85,6 +85,9 @@ svg g:focus-visible {
     border-radius 1.2s;
 }
 .world-stage canvas {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
   touch-action: pan-y !important;
 }
 .inside-home .world-stage {
