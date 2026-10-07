@@ -56,8 +56,8 @@ function SceneText({
     const context = canvas.getContext('2d');
     if (!context) return null;
 
-    const pixelFont = 84;
-    const padding = 28;
+    const pixelFont = 128;
+    const padding = 42;
     const lineCapacity = maxWidth
       ? (maxWidth / Math.max(fontSize, 0.01)) * pixelFont * 0.52
       : 900;
@@ -119,19 +119,22 @@ function SceneText({
   const offsetX =
     anchorX === 'left' ? width / 2 : anchorX === 'right' ? -width / 2 : 0;
   return (
-    <sprite
-      position={[position[0] + offsetX, position[1], position[2]]}
-      scale={[width, height, 1]}
-      renderOrder={20}
+    <mesh
+      position={[position[0] + offsetX, position[1], position[2] + 0.025]}
+      renderOrder={4}
     >
-      <spriteMaterial
+      <planeGeometry args={[width, height]} />
+      <meshBasicMaterial
         map={label.texture}
         transparent
+        alphaTest={0.02}
         depthWrite={false}
-        depthTest={false}
         toneMapped={false}
+        polygonOffset
+        polygonOffsetFactor={-3}
+        polygonOffsetUnits={-3}
       />
-    </sprite>
+    </mesh>
   );
 }
 
@@ -851,7 +854,9 @@ function Exhibit({
         rotationIntensity={reduced ? 0 : 0.08}
       >
         <group
-          scale={hover ? 1.18 : 1}
+          scale={hover ? 1.1 : 1}
+          position={[0, 0, hover ? 0.28 : 0]}
+          rotation={hover ? [0, -rotation[1], 0] : [0, 0, 0]}
           onClick={(e) => {
             e.stopPropagation();
             if (!suppressClick?.current) onInspect(item);
@@ -867,22 +872,22 @@ function Exhibit({
           }}
         >
           <Block
-            size={[small ? 2.2 : 2.9, small ? 1.7 : 2.15, 0.16]}
+            size={[small ? 2.05 : 2.9, small ? 1.52 : 2.15, 0.16]}
             color={hover ? '#e5dfcd' : cream}
             round={0.1}
           />
           <Block
             at={[0, 0, -0.1]}
-            size={[small ? 2.32 : 3.04, small ? 1.82 : 2.3, 0.13]}
+            size={[small ? 2.17 : 3.04, small ? 1.64 : 2.3, 0.13]}
             color={accent}
             round={0.08}
           />
           {
             <>
               <SceneText
-                position={[0, small ? 0.2 : 0.25, 0.1]}
-                fontSize={small ? 0.27 : 0.3}
-                maxWidth={small ? 1.76 : 2.48}
+                position={[0, small ? 0.18 : 0.25, 0.12]}
+                fontSize={small ? 0.22 : 0.3}
+                maxWidth={small ? 1.62 : 2.48}
                 lineHeight={1.08}
                 textAlign="center"
                 color="#2e332f"
@@ -890,9 +895,9 @@ function Exhibit({
                 {item.title}
               </SceneText>
               <SceneText
-                position={[0, small ? -0.43 : -0.42, 0.1]}
-                fontSize={small ? 0.12 : 0.13}
-                maxWidth={small ? 1.8 : 2.5}
+                position={[0, small ? -0.36 : -0.42, 0.12]}
+                fontSize={small ? 0.1 : 0.13}
+                maxWidth={small ? 1.62 : 2.5}
                 textAlign="center"
                 color={accent}
               >
@@ -901,17 +906,17 @@ function Exhibit({
             </>
           }
           <SceneText
-            position={[-(small ? 0.94 : 1.29), small ? -0.7 : -0.9, 0.105]}
+            position={[-(small ? 0.87 : 1.29), small ? -0.59 : -0.9, 0.125]}
             anchorX="left"
-            fontSize={small ? 0.12 : 0.11}
+            fontSize={0.1}
             color={accent}
           >
             {String(index + 1).padStart(2, '0')}
           </SceneText>
           <SceneText
-            position={[small ? 0.94 : 1.29, small ? -0.7 : -0.9, 0.105]}
+            position={[small ? 0.87 : 1.29, small ? -0.59 : -0.9, 0.125]}
             anchorX="right"
-            fontSize={small ? 0.12 : 0.11}
+            fontSize={0.1}
             maxWidth={small ? 1.4 : 2.2}
             color="#66675e"
           >
@@ -1233,16 +1238,19 @@ function Room({
         </>
       )}
       {items.map((item, i) => {
-        const many = room === 'projects';
-        const side = i % 2 === 0 ? -1 : 1;
-        const projectColumns = [-4.55, -2.25, 2.25, 4.55];
-        const galleryTop = [-5.4, -3.6, -1.8, 0, 1.8, 3.6, 5.4];
+        const many = room === 'projects',
+          side = i % 2 === 0 ? -1 : 1;
         const at: V3 = many
-          ? i < 8
-            ? [projectColumns[i % 4], 1.32 + Math.floor(i / 4) * 1.92, -7.42]
-            : [galleryTop[i - 8], 5.02, -7.42]
+          ? i < 6
+            ? [side * 4.25, 1.35 + Math.floor(i / 2) * 1.85, -7.42]
+            : [
+                side * 6.72,
+                2.55,
+                i === 9 ? 6.7 : 4.6 - Math.floor((i - 6) / 2) * 2.55,
+              ]
           : [side * 4.3, 2.1 + Math.floor(i / 2) * 2.45, -7.4];
-        const rotation: V3 = [0, 0, 0];
+        const rotation: V3 =
+          many && i >= 6 ? [0, (-side * Math.PI) / 2, 0] : [0, 0, 0];
         return (
           <Exhibit
             key={item.title}
@@ -1728,7 +1736,7 @@ function CameraRig({
         reducedMotion || paused
           ? 0
           : Math.sin(state.clock.elapsedTime * 0.7) * 0.012;
-      pos.set(sway, 1.85 + breath, 5.35 - span * 16).add(offset.current);
+      pos.set(sway, 1.85 + breath, 4.6 - span * 16).add(offset.current);
       target.set(
         pos.x - Math.sin(yaw.current) * 10 * Math.cos(pitch.current),
         pos.y + Math.sin(pitch.current) * 10,
