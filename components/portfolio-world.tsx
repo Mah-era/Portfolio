@@ -30,6 +30,22 @@ import {
   type WorldItem,
 } from '@/lib/portfolio-data';
 
+let montserratFont: Promise<FontFace> | null = null;
+
+function loadMontserrat() {
+  if (montserratFont) return montserratFont;
+  const source = new URL('./fonts/montserrat-700.ttf', document.baseURI).href;
+  const font = new FontFace('Montserrat', `url(${source})`, {
+    style: 'normal',
+    weight: '700',
+  });
+  montserratFont = font.load().then((loaded) => {
+    document.fonts.add(loaded);
+    return loaded;
+  });
+  return montserratFont;
+}
+
 function SceneText({
   children,
   position = [0, 0, 0],
@@ -51,6 +67,20 @@ function SceneText({
   color?: string;
 }) {
   const text = String(children);
+  const [fontReady, setFontReady] = useState(false);
+  useEffect(() => {
+    let active = true;
+    loadMontserrat()
+      .then(() => {
+        if (active) setFontReady(true);
+      })
+      .catch(() => {
+        // Keep the system fallback if the local font cannot be decoded.
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
   const label = useMemo(() => {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
@@ -62,7 +92,7 @@ function SceneText({
       ? (maxWidth / Math.max(fontSize, 0.01)) * pixelFont * 0.52
       : 900;
     const pixelLimit = Math.min(900, Math.max(360, lineCapacity));
-    context.font = `700 ${pixelFont}px Arial, sans-serif`;
+    context.font = `700 ${pixelFont}px ${fontReady ? 'Montserrat' : 'Arial'}, sans-serif`;
     const lines: string[] = [];
     text.split('\n').forEach((paragraph) => {
       const words = paragraph.split(/\s+/).filter(Boolean);
@@ -86,7 +116,7 @@ function SceneText({
     canvas.height = Math.ceil(
       lines.length * pixelFont * lineHeight + padding * 2,
     );
-    context.font = `700 ${pixelFont}px Arial, sans-serif`;
+    context.font = `700 ${pixelFont}px ${fontReady ? 'Montserrat' : 'Arial'}, sans-serif`;
     context.fillStyle = color;
     context.textAlign = textAlign;
     context.textBaseline = 'middle';
@@ -109,7 +139,7 @@ function SceneText({
       aspect: canvas.width / canvas.height,
       lines: lines.length,
     };
-  }, [color, fontSize, lineHeight, maxWidth, text, textAlign]);
+  }, [color, fontReady, fontSize, lineHeight, maxWidth, text, textAlign]);
   useEffect(() => () => label?.texture.dispose(), [label]);
   if (!label) return null;
 
@@ -1264,19 +1294,26 @@ function Room({
         </>
       )}
       {items.map((item, i) => {
-        const many = room === 'projects',
-          side = i % 2 === 0 ? -1 : 1;
+        const many = room === 'projects';
+        const side = i % 2 === 0 ? -1 : 1;
+        const projectFrontColumns = [-5.25, -2.65, 2.65, 5.25];
+        const projectFrontRows = [1.2, 3.05, 4.9];
+        const projectSideSlots: Array<{ at: V3; rotation: V3 }> = [
+          { at: [-6.72, 1.45, -4.65], rotation: [0, Math.PI / 2, 0] },
+          { at: [6.72, 1.45, -4.65], rotation: [0, -Math.PI / 2, 0] },
+          { at: [-6.72, 3.25, -4.65], rotation: [0, Math.PI / 2, 0] },
+        ];
+        const projectSlot = i >= 12 ? projectSideSlots[i - 12] : null;
         const at: V3 = many
-          ? i < 6
-            ? [side * 4.25, 1.35 + Math.floor(i / 2) * 1.85, -7.42]
+          ? projectSlot
+            ? projectSlot.at
             : [
-                side * 6.72,
-                2.55,
-                i === 9 ? 6.7 : 4.6 - Math.floor((i - 6) / 2) * 2.55,
+                projectFrontColumns[i % projectFrontColumns.length],
+                projectFrontRows[Math.floor(i / projectFrontColumns.length)],
+                -7.42,
               ]
           : [side * 4.3, 2.1 + Math.floor(i / 2) * 2.45, -7.4];
-        const rotation: V3 =
-          many && i >= 6 ? [0, (-side * Math.PI) / 2, 0] : [0, 0, 0];
+        const rotation: V3 = projectSlot?.rotation ?? [0, 0, 0];
         return (
           <Exhibit
             key={item.title}

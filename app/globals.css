@@ -837,6 +837,7 @@ svg g:focus-visible {
   padding: 30px;
 }
 .story-item {
+  font-family: var(--font-montserrat), Arial, sans-serif;
   min-width: 0;
   border: 1px solid #302f291c;
   border-radius: 3px;
