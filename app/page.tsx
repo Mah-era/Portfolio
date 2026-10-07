@@ -193,6 +193,18 @@ export default function Home() {
       <div className="experience-stage">
         <div className="paper-grain" aria-hidden="true" />
         <div className="world-stage">
+          {fallback && (
+            <div className="world-access-fallback" role="status">
+              <span>Interactive residence</span>
+              <strong>
+                Use the room guide below to explore Mahera’s work.
+              </strong>
+              <small>
+                3D preview is unavailable in this browser; all rooms remain
+                accessible below.
+              </small>
+            </div>
+          )}
           <Suspense fallback={null}>
             <World
               resetView={resetView}

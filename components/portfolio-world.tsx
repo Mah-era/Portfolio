@@ -1699,14 +1699,6 @@ function WebGLFallback() {
 export function PortfolioWorld(props: WorldProps) {
   return (
     <WorldBoundary onFallback={props.onFallback}>
-      <div className="world-access-fallback" aria-hidden="true">
-        <span>Interactive residence</span>
-        <strong>Use the room guide below to explore Mahera’s work.</strong>
-        <small>
-          WebGL is unavailable in this browser, so the accessible portfolio
-          guide is active.
-        </small>
-      </div>
       <Canvas
         shadows="percentage"
         dpr={props.compact ? 1 : [1, 1.5]}
