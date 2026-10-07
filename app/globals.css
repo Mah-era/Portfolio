@@ -729,7 +729,8 @@ svg g:focus-visible {
 .world-access-fallback {
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: 3;
+  pointer-events: none;
   display: grid;
   place-content: center;
   gap: 14px;

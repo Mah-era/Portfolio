@@ -78,6 +78,17 @@ export default function Home() {
   const pendingTravel = useRef<number | null>(null);
   const current = roomOrder[Math.max(0, chapter - 1)],
     data = roomData[current];
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const canvas = document.querySelector<HTMLCanvasElement>(
+        '.world-stage canvas',
+      );
+      if (!canvas || canvas.getBoundingClientRect().width === 0) {
+        setFallback(true);
+      }
+    }, 1800);
+    return () => window.clearTimeout(timer);
+  }, []);
   const storyRoom = collection ?? current,
     storyData = roomData[storyRoom];
   const intro = chapter === 0,
