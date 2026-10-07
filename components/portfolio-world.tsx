@@ -1,18 +1,16 @@
 'use client';
 
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import {
-  Float,
-  Html,
-  RoundedBox,
-  Environment,
-  Lightformer,
-} from '@react-three/drei';
+  Canvas,
+  useFrame,
+  useThree,
+  type ThreeEvent,
+} from '@react-three/fiber';
+import { Float, RoundedBox } from '@react-three/drei';
 import {
   Component,
   createContext,
   useContext,
-  Suspense,
   useEffect,
   useMemo,
   useRef,
@@ -32,15 +30,213 @@ import {
   type WorldItem,
 } from '@/lib/portfolio-data';
 
-// Relative to the current document so the font works at localhost and under
-// the GitHub Pages project path (/Portfolio/).
-const sceneFont = './fonts/scene.woff2';
-function SceneText(props: any) {
-  // Troika's worker-based SDF text can fail on static Pages runtimes where
-  // worker module scope has no window. Labels are duplicated in the accessible
-  // HTML guide, so keep this visual layer non-blocking and worker-free.
-  void props;
-  return null;
+function SceneText({
+  children,
+  position = [0, 0, 0],
+  fontSize = 0.2,
+  maxWidth,
+  lineHeight = 1.12,
+  textAlign = 'center',
+  anchorX = 'center',
+  color = '#2e332f',
+}: {
+  children: string | number;
+  position?: V3;
+  fontSize?: number;
+  maxWidth?: number;
+  lineHeight?: number;
+  textAlign?: CanvasTextAlign;
+  anchorX?: 'left' | 'center' | 'right';
+  letterSpacing?: number;
+  color?: string;
+}) {
+  const text = String(children);
+  const label = useMemo(() => {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    if (!context) return null;
+
+    const pixelFont = 72;
+    const padding = 28;
+    const pixelLimit = 900;
+    context.font = `600 ${pixelFont}px Arial, sans-serif`;
+    const lines: string[] = [];
+    text.split('\n').forEach((paragraph) => {
+      const words = paragraph.split(/\s+/).filter(Boolean);
+      if (!words.length) return lines.push('');
+      let line = words[0];
+      words.slice(1).forEach((word) => {
+        const candidate = `${line} ${word}`;
+        if (context.measureText(candidate).width > pixelLimit) {
+          lines.push(line);
+          line = word;
+        } else line = candidate;
+      });
+      lines.push(line);
+    });
+
+    const measured = Math.max(
+      1,
+      ...lines.map((line) => context.measureText(line).width),
+    );
+    canvas.width = Math.ceil(Math.min(pixelLimit, measured) + padding * 2);
+    canvas.height = Math.ceil(
+      lines.length * pixelFont * lineHeight + padding * 2,
+    );
+    context.font = `600 ${pixelFont}px Arial, sans-serif`;
+    context.fillStyle = color;
+    context.textAlign = textAlign;
+    context.textBaseline = 'middle';
+    const x =
+      textAlign === 'left'
+        ? padding
+        : textAlign === 'right'
+          ? canvas.width - padding
+          : canvas.width / 2;
+    lines.forEach((line, index) => {
+      const y = padding + pixelFont * lineHeight * (index + 0.5);
+      context.fillText(line, x, y);
+    });
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.minFilter = THREE.LinearFilter;
+    texture.generateMipmaps = false;
+    return {
+      texture,
+      aspect: canvas.width / canvas.height,
+      lines: lines.length,
+    };
+  }, [color, lineHeight, text, textAlign]);
+  useEffect(() => () => label?.texture.dispose(), [label]);
+  if (!label) return null;
+
+  const naturalWidth = fontSize * label.aspect * label.lines * lineHeight;
+  const width = Math.min(maxWidth ?? naturalWidth, naturalWidth);
+  const height = width / label.aspect;
+  const offsetX =
+    anchorX === 'left' ? width / 2 : anchorX === 'right' ? -width / 2 : 0;
+  return (
+    <sprite
+      position={[position[0] + offsetX, position[1], position[2]]}
+      scale={[width, height, 1]}
+    >
+      <spriteMaterial
+        map={label.texture}
+        transparent
+        depthWrite={false}
+        toneMapped={false}
+      />
+    </sprite>
+  );
+}
+
+type TouchReaction = {
+  object: THREE.Mesh;
+  scale: THREE.Vector3;
+  rotationZ: number;
+};
+
+function TouchPulse({ at, onDone }: { at: V3; onDone: () => void }) {
+  const mesh = useRef<THREE.Mesh>(null);
+  const material = useRef<THREE.MeshBasicMaterial>(null);
+  const age = useRef(0);
+  useFrame((_, delta) => {
+    age.current += delta;
+    const progress = Math.min(1, age.current / 0.72);
+    if (mesh.current) {
+      const size = 0.16 + progress * 0.72;
+      mesh.current.scale.setScalar(size);
+      mesh.current.position.y -= delta * 0.22;
+      mesh.current.rotation.x += delta * 1.8;
+      mesh.current.rotation.y += delta * 1.2;
+    }
+    if (material.current) material.current.opacity = (1 - progress) * 0.72;
+    if (progress === 1) onDone();
+  });
+  return (
+    <mesh ref={mesh} position={at}>
+      <icosahedronGeometry args={[0.22, 1]} />
+      <meshBasicMaterial
+        ref={material}
+        color="#d69a61"
+        transparent
+        wireframe
+        depthWrite={false}
+      />
+    </mesh>
+  );
+}
+
+function TouchReactor({
+  children,
+  reduced,
+}: {
+  children: ReactNode;
+  reduced: boolean;
+}) {
+  const reactions = useRef<TouchReaction[]>([]);
+  const nextPulse = useRef(0);
+  const [pulses, setPulses] = useState<Array<{ id: number; at: V3 }>>([]);
+  useFrame((_, delta) => {
+    reactions.current = reactions.current.filter((reaction) => {
+      reaction.object.scale.lerp(reaction.scale, 1 - Math.exp(-delta * 10));
+      reaction.object.rotation.z = THREE.MathUtils.damp(
+        reaction.object.rotation.z,
+        reaction.rotationZ,
+        12,
+        delta,
+      );
+      return (
+        reaction.object.scale.distanceTo(reaction.scale) > 0.003 ||
+        Math.abs(reaction.object.rotation.z - reaction.rotationZ) > 0.003
+      );
+    });
+  });
+  const react = (event: ThreeEvent<PointerEvent>) => {
+    if (reduced) return;
+    const id = ++nextPulse.current;
+    setPulses((current) => [
+      ...current.slice(-5),
+      { id, at: [event.point.x, event.point.y + 0.04, event.point.z] },
+    ]);
+
+    const object = event.object;
+    if (
+      !(object instanceof THREE.Mesh) ||
+      object instanceof THREE.InstancedMesh
+    )
+      return;
+    object.geometry.computeBoundingBox();
+    const bounds = object.geometry.boundingBox;
+    if (!bounds) return;
+    const size = bounds.getSize(new THREE.Vector3());
+    if (Math.max(size.x, size.y, size.z) > 4.5) return;
+    if (reactions.current.some((reaction) => reaction.object === object))
+      return;
+    reactions.current.push({
+      object,
+      scale: object.scale.clone(),
+      rotationZ: object.rotation.z,
+    });
+    object.scale.multiplyScalar(0.88);
+    object.rotation.z += (event.point.x >= 0 ? 1 : -1) * 0.055;
+  };
+  return (
+    <group onPointerDown={react}>
+      {children}
+      {pulses.map((pulse) => (
+        <TouchPulse
+          key={pulse.id}
+          at={pulse.at}
+          onDone={() =>
+            setPulses((current) =>
+              current.filter((item) => item.id !== pulse.id),
+            )
+          }
+        />
+      ))}
+    </group>
+  );
 }
 import {
   KineticSculpture,
@@ -676,7 +872,7 @@ function Exhibit({
             color={accent}
             round={0.08}
           />
-          {false ? (
+          {
             <>
               <SceneText
                 position={[0, small ? 0.16 : 0.25, 0.1]}
@@ -698,7 +894,7 @@ function Exhibit({
                 {item.eyebrow}
               </SceneText>
             </>
-          ) : null}
+          }
           <SceneText
             position={[-(small ? 0.86 : 1.29), small ? -0.59 : -0.9, 0.105]}
             anchorX="left"
@@ -726,7 +922,7 @@ function Exhibit({
   );
 }
 function RoomShell({
-  room,
+  room: _room,
   index,
   night,
 }: {
@@ -1587,48 +1783,50 @@ function Scene(props: WorldProps) {
     <LookContext.Provider value={suppressClick}>
       <color attach="background" args={['#d8d8c4']} />
       <fog attach="fog" args={['#d8d8c4', 35, 95]} />
-      <GardenSky
-        reduced={props.reducedMotion || props.paused}
-        night={props.night}
-      />
-      {props.chapter < 3 && (
-        <LavenderForest
+      <TouchReactor reduced={props.reducedMotion || props.paused}>
+        <GardenSky
           reduced={props.reducedMotion || props.paused}
           night={props.night}
         />
-      )}
+        {props.chapter < 3 && (
+          <LavenderForest
+            reduced={props.reducedMotion || props.paused}
+            night={props.night}
+          />
+        )}
+        {props.chapter < 2 && (
+          <Exterior
+            journey={props.journey}
+            reduced={props.reducedMotion || props.paused}
+            night={props.night}
+          />
+        )}
+        {roomOrder.map(
+          (_, i) =>
+            Math.abs(i - active) <= 1 && (
+              <Room
+                key={i}
+                index={i}
+                reduced={props.reducedMotion || props.paused}
+                night={props.night}
+                onInspect={props.onInspect}
+                onTravel={props.onTravel}
+              />
+            ),
+        )}
+        <group visible={active <= 1}>
+          <Residents
+            active={0}
+            reduced={props.reducedMotion || props.paused || active > 1}
+          />
+        </group>
+      </TouchReactor>
       <ambientLight ref={ambient} intensity={0.7} />
       <hemisphereLight
         color={props.night ? '#91a6bb' : '#eaf0df'}
         groundColor={props.night ? '#55402d' : '#99704c'}
         intensity={props.night ? 0.22 : 0.85}
       />
-      <group>
-        <Lightformer
-          form="rect"
-          intensity={3}
-          color="#fff0cd"
-          scale={[12, 10, 1]}
-          position={[-8, 8, 8]}
-          target={[0, 0, 0]}
-        />
-        <Lightformer
-          form="rect"
-          intensity={2}
-          color="#dbe8ec"
-          scale={[10, 10, 1]}
-          position={[8, 3, -4]}
-          target={[0, 0, 0]}
-        />
-        <Lightformer
-          form="ring"
-          intensity={2}
-          color="#ffdf9b"
-          scale={8}
-          position={[0, 10, 0]}
-          rotation={[Math.PI / 2, 0, 0]}
-        />
-      </group>
       <primitive object={sunlightTarget} position={[0, 0, -active * 16]} />
       <directionalLight
         ref={sun}
@@ -1644,32 +1842,6 @@ function Scene(props: WorldProps) {
         shadow-camera-bottom={-16}
         shadow-normalBias={0.04}
       />
-      {props.chapter < 2 && (
-        <Exterior
-          journey={props.journey}
-          reduced={props.reducedMotion || props.paused}
-          night={props.night}
-        />
-      )}
-      {roomOrder.map(
-        (_, i) =>
-          Math.abs(i - active) <= 1 && (
-            <Room
-              key={i}
-              index={i}
-              reduced={props.reducedMotion || props.paused}
-              night={props.night}
-              onInspect={props.onInspect}
-              onTravel={props.onTravel}
-            />
-          ),
-      )}
-      <group visible={active <= 1}>
-        <Residents
-          active={0}
-          reduced={props.reducedMotion || props.paused || active > 1}
-        />
-      </group>
       <CameraRig {...props} suppressClick={suppressClick} />
     </LookContext.Provider>
   );

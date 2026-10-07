@@ -1,6 +1,5 @@
 'use client';
 
-import { Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
@@ -91,51 +90,27 @@ export function EntranceClock({
           />
         </mesh>
       ))}
-      {[
-        'XII',
-        'I',
-        'II',
-        'III',
-        'IV',
-        'V',
-        'VI',
-        'VII',
-        'VIII',
-        'IX',
-        'X',
-        'XI',
-      ].map((n, i) => (
-        <group key={n} rotation={[0, 0, (-i * Math.PI) / 6]}>
-          <Text
-            position={[0, 0.59, 0.086]}
-            fontSize={0.14}
-            letterSpacing={-0.07}
-            color={night ? '#c6bca8' : '#292c27'}
-          >
-            {n}
-          </Text>
-          <mesh position={[0, 0.418, 0.084]}>
-            <boxGeometry args={[0.012, 0.09, 0.014]} />
-            <meshStandardMaterial color="#292c27" />
-          </mesh>
-        </group>
-      ))}
-      <Text
-        position={[0, -0.21, 0.086]}
-        fontSize={0.046}
-        letterSpacing={0.1}
-        color="#ccb899"
-      >
-        {time}
-      </Text>
-      <Text
-        position={[0, 0.21, 0.086]}
-        fontSize={0.042}
-        letterSpacing={0.1}
-        color="#ccb899"
-      >
-        DHAKA
-      </Text>
+      {Array.from({ length: 12 }, (_, i) => {
+        const major = i % 3 === 0;
+        return (
+          <group key={i} rotation={[0, 0, (-i * Math.PI) / 6]}>
+            <mesh position={[0, major ? 0.445 : 0.425, 0.084]}>
+              <boxGeometry
+                args={[major ? 0.025 : 0.012, major ? 0.135 : 0.09, 0.014]}
+              />
+              <meshStandardMaterial color={night ? '#c6bca8' : '#292c27'} />
+            </mesh>
+          </group>
+        );
+      })}
+      <mesh position={[0, 0.21, 0.088]}>
+        <ringGeometry args={[0.075, 0.086, 48]} />
+        <meshBasicMaterial color="#ccb899" />
+      </mesh>
+      <mesh position={[0, -0.21, 0.088]}>
+        <ringGeometry args={[0.045, 0.054, 32]} />
+        <meshBasicMaterial color="#ccb899" />
+      </mesh>
       {[
         {
           angle: (((hours % 12) + minutes / 60 + seconds / 3600) * Math.PI) / 6,
@@ -347,7 +322,9 @@ export function GardenSky({
     if (group.current) group.current.position.z = camera.position.z - 18;
     clouds.current?.children.forEach((cloud, i) => {
       const layer = Math.floor(i / 6);
-      cloud.position.x = -54 + ((i * 19 + layer * 11 + time.current * (0.14 + layer * 0.035)) % 120);
+      cloud.position.x =
+        -54 +
+        ((i * 19 + layer * 11 + time.current * (0.14 + layer * 0.035)) % 120);
     });
   });
   return (
@@ -380,7 +357,11 @@ export function GardenSky({
         {Array.from({ length: 18 }, (_, i) => (
           <group
             key={i}
-            position={[-54 + ((i * 19 + Math.floor(i / 6) * 11) % 120), 11 + (i % 4) * 3.1, -20 - Math.floor(i / 6) * 15]}
+            position={[
+              -54 + ((i * 19 + Math.floor(i / 6) * 11) % 120),
+              11 + (i % 4) * 3.1,
+              -20 - Math.floor(i / 6) * 15,
+            ]}
             scale={0.78 + (i % 5) * 0.09}
           >
             {Array.from({ length: 6 }, (_, j) => (

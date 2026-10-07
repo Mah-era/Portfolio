@@ -93,7 +93,10 @@ export default function Home() {
     storyData = roomData[storyRoom];
   const intro = chapter === 0,
     quiet = reduced || still;
-  const handleReady = useCallback(() => setReady(true), []);
+  const handleReady = useCallback(() => {
+    setReady(true);
+    setFallback(false);
+  }, []);
   const handleFallback = useCallback(() => {
     setFallback(true);
     setReady(true);
@@ -205,7 +208,7 @@ export default function Home() {
         <div className="paper-grain" aria-hidden="true" />
         <div className="world-stage">
           {fallback && (
-            <div className="world-access-fallback" role="status">
+            <output className="world-access-fallback">
               <span>Interactive residence</span>
               <strong>
                 Use the room guide below to explore Mahera’s work.
@@ -214,7 +217,7 @@ export default function Home() {
                 3D preview is unavailable in this browser; all rooms remain
                 accessible below.
               </small>
-            </div>
+            </output>
           )}
           <Suspense fallback={null}>
             <World
