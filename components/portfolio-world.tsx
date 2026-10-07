@@ -56,10 +56,13 @@ function SceneText({
     const context = canvas.getContext('2d');
     if (!context) return null;
 
-    const pixelFont = 72;
+    const pixelFont = 84;
     const padding = 28;
-    const pixelLimit = 900;
-    context.font = `600 ${pixelFont}px Arial, sans-serif`;
+    const lineCapacity = maxWidth
+      ? (maxWidth / Math.max(fontSize, 0.01)) * pixelFont * 0.52
+      : 900;
+    const pixelLimit = Math.min(900, Math.max(360, lineCapacity));
+    context.font = `700 ${pixelFont}px Arial, sans-serif`;
     const lines: string[] = [];
     text.split('\n').forEach((paragraph) => {
       const words = paragraph.split(/\s+/).filter(Boolean);
@@ -79,11 +82,11 @@ function SceneText({
       1,
       ...lines.map((line) => context.measureText(line).width),
     );
-    canvas.width = Math.ceil(Math.min(pixelLimit, measured) + padding * 2);
+    canvas.width = Math.ceil(measured + padding * 2);
     canvas.height = Math.ceil(
       lines.length * pixelFont * lineHeight + padding * 2,
     );
-    context.font = `600 ${pixelFont}px Arial, sans-serif`;
+    context.font = `700 ${pixelFont}px Arial, sans-serif`;
     context.fillStyle = color;
     context.textAlign = textAlign;
     context.textBaseline = 'middle';
@@ -106,7 +109,7 @@ function SceneText({
       aspect: canvas.width / canvas.height,
       lines: lines.length,
     };
-  }, [color, lineHeight, text, textAlign]);
+  }, [color, fontSize, lineHeight, maxWidth, text, textAlign]);
   useEffect(() => () => label?.texture.dispose(), [label]);
   if (!label) return null;
 
@@ -119,11 +122,13 @@ function SceneText({
     <sprite
       position={[position[0] + offsetX, position[1], position[2]]}
       scale={[width, height, 1]}
+      renderOrder={20}
     >
       <spriteMaterial
         map={label.texture}
         transparent
         depthWrite={false}
+        depthTest={false}
         toneMapped={false}
       />
     </sprite>
@@ -846,7 +851,7 @@ function Exhibit({
         rotationIntensity={reduced ? 0 : 0.08}
       >
         <group
-          scale={hover ? 1.035 : 1}
+          scale={hover ? 1.18 : 1}
           onClick={(e) => {
             e.stopPropagation();
             if (!suppressClick?.current) onInspect(item);
@@ -862,32 +867,32 @@ function Exhibit({
           }}
         >
           <Block
-            size={[small ? 2 : 2.9, small ? 1.48 : 2.15, 0.16]}
+            size={[small ? 2.2 : 2.9, small ? 1.7 : 2.15, 0.16]}
             color={hover ? '#e5dfcd' : cream}
             round={0.1}
           />
           <Block
             at={[0, 0, -0.1]}
-            size={[small ? 2.12 : 3.04, small ? 1.6 : 2.3, 0.13]}
+            size={[small ? 2.32 : 3.04, small ? 1.82 : 2.3, 0.13]}
             color={accent}
             round={0.08}
           />
           {
             <>
               <SceneText
-                position={[0, small ? 0.16 : 0.25, 0.1]}
-                fontSize={small ? 0.18 : 0.25}
-                maxWidth={small ? 1.65 : 2.48}
-                lineHeight={1.15}
+                position={[0, small ? 0.2 : 0.25, 0.1]}
+                fontSize={small ? 0.27 : 0.3}
+                maxWidth={small ? 1.76 : 2.48}
+                lineHeight={1.08}
                 textAlign="center"
                 color="#2e332f"
               >
                 {item.title}
               </SceneText>
               <SceneText
-                position={[0, small ? -0.35 : -0.42, 0.1]}
-                fontSize={0.1}
-                maxWidth={small ? 1.7 : 2.5}
+                position={[0, small ? -0.43 : -0.42, 0.1]}
+                fontSize={small ? 0.12 : 0.13}
+                maxWidth={small ? 1.8 : 2.5}
                 textAlign="center"
                 color={accent}
               >
@@ -896,24 +901,24 @@ function Exhibit({
             </>
           }
           <SceneText
-            position={[-(small ? 0.86 : 1.29), small ? -0.59 : -0.9, 0.105]}
+            position={[-(small ? 0.94 : 1.29), small ? -0.7 : -0.9, 0.105]}
             anchorX="left"
-            fontSize={0.1}
+            fontSize={small ? 0.12 : 0.11}
             color={accent}
           >
             {String(index + 1).padStart(2, '0')}
           </SceneText>
           <SceneText
-            position={[small ? 0.86 : 1.29, small ? -0.59 : -0.9, 0.105]}
+            position={[small ? 0.94 : 1.29, small ? -0.7 : -0.9, 0.105]}
             anchorX="right"
-            fontSize={0.1}
+            fontSize={small ? 0.12 : 0.11}
             maxWidth={small ? 1.4 : 2.2}
             color="#66675e"
           >
             {hover
               ? 'OPEN STORY ↗'
               : item.image
-                ? item.title
+                ? 'VIEW PROJECT ↗'
                 : 'A CLOSER LOOK ↗'}
           </SceneText>
         </group>
@@ -1228,19 +1233,16 @@ function Room({
         </>
       )}
       {items.map((item, i) => {
-        const many = room === 'projects',
-          side = i % 2 === 0 ? -1 : 1;
+        const many = room === 'projects';
+        const side = i % 2 === 0 ? -1 : 1;
+        const projectColumns = [-4.55, -2.25, 2.25, 4.55];
+        const galleryTop = [-5.4, -3.6, -1.8, 0, 1.8, 3.6, 5.4];
         const at: V3 = many
-          ? i < 6
-            ? [side * 4.3, 1.35 + Math.floor(i / 2) * 1.85, -7.42]
-            : [
-                side * 6.75,
-                2.55,
-                i === 9 ? 6.9 : 4.8 - Math.floor((i - 6) / 2) * 2.7,
-              ]
+          ? i < 8
+            ? [projectColumns[i % 4], 1.32 + Math.floor(i / 4) * 1.92, -7.42]
+            : [galleryTop[i - 8], 5.02, -7.42]
           : [side * 4.3, 2.1 + Math.floor(i / 2) * 2.45, -7.4];
-        const rotation: V3 =
-          many && i >= 6 ? [0, (-side * Math.PI) / 2, 0] : [0, 0, 0];
+        const rotation: V3 = [0, 0, 0];
         return (
           <Exhibit
             key={item.title}
@@ -1726,7 +1728,7 @@ function CameraRig({
         reducedMotion || paused
           ? 0
           : Math.sin(state.clock.elapsedTime * 0.7) * 0.012;
-      pos.set(sway, 1.85 + breath, 4.2 - span * 16).add(offset.current);
+      pos.set(sway, 1.85 + breath, 5.35 - span * 16).add(offset.current);
       target.set(
         pos.x - Math.sin(yaw.current) * 10 * Math.cos(pitch.current),
         pos.y + Math.sin(pitch.current) * 10,
